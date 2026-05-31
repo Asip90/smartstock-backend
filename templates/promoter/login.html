@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace promoteur | SmartStock</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { primaryBlue:'#1A56DB', deepNavy:'#1E3A5F', surface:'#F1F5F9', textSecondary:'#64748B', borderColor:'#E2E8F0' },
+      fontFamily: { sans:['Poppins','sans-serif'] } } } }
+  </script>
+</head>
+<body class="font-sans bg-surface text-deepNavy min-h-screen flex items-center justify-center px-6">
+  <div class="w-full max-w-sm bg-white rounded-2xl border border-borderColor p-8 shadow-sm">
+    <div class="flex items-center gap-2 mb-6">
+      <div class="w-9 h-9 bg-primaryBlue rounded-xl flex items-center justify-center text-white font-extrabold">S</div>
+      <span class="font-extrabold text-lg tracking-tight">SmartStock</span>
+    </div>
+    <h1 class="text-2xl font-extrabold mb-1">Espace promoteur</h1>
+    <p class="text-sm text-textSecondary mb-6">Connectez-vous avec les identifiants qui vous ont été fournis.</p>
+
+    {% if error %}
+      <div class="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="block text-xs font-bold text-textSecondary mb-1 uppercase tracking-wider">Identifiant</label>
+        <input name="username" required autofocus
+               class="w-full px-4 py-3 rounded-xl border border-borderColor focus:border-primaryBlue focus:ring-2 focus:ring-primaryBlue/20 outline-none">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-textSecondary mb-1 uppercase tracking-wider">Mot de passe</label>
+        <input name="password" type="password" required
+               class="w-full px-4 py-3 rounded-xl border border-borderColor focus:border-primaryBlue focus:ring-2 focus:ring-primaryBlue/20 outline-none">
+      </div>
+      <button type="submit"
+              class="w-full bg-primaryBlue text-white py-3 rounded-xl font-bold hover:brightness-110 active:scale-95 transition-all">
+        Se connecter
+      </button>
+    </form>
+    <a href="/" class="block text-center text-xs text-textSecondary mt-6 hover:text-primaryBlue">← Retour au site</a>
+  </div>
+</body>
+</html>

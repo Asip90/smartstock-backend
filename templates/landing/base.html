@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SmartStock | Gestion de stock & ventes pour commerçants{% endblock %}</title>
+    <meta name="description" content="SmartStock : gérez vos produits, ventes, réapprovisionnements et bénéfices depuis votre téléphone. Hors-ligne, reçus PDF, assistant vocal. Made in Benin.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'landing/css/custom.css' %}">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primaryBlue: '#1A56DB',
+                        accentCyan: '#06B6D4',
+                        deepNavy: '#1E3A5F',
+                        surface: '#F1F5F9',
+                        successGreen: '#16A34A',
+                        errorRed: '#DC2626',
+                        warningAmber: '#F59E0B',
+                        textSecondary: '#64748B',
+                        borderColor: '#E2E8F0',
+                        darkBg: '#0F172A',
+                        darkSurface: '#1E293B',
+                        darkCard: '#243447',
+                    },
+                    borderRadius: { 'input': '12px', 'card': '16px', 'sheet': '24px' },
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    letterSpacing: { tightest: '-0.5px', tighter: '-0.3px' }
+                }
+            }
+        }
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-white text-deepNavy selection:bg-primaryBlue selection:text-white dark:bg-darkBg dark:text-gray-100 transition-colors duration-300">
+
+    <!-- NAVBAR -->
+    <nav id="navbar" class="fixed top-0 w-full h-16 z-50 transition-all duration-300 bg-transparent">
+        <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-9 h-9 bg-primaryBlue rounded-lg flex items-center justify-center text-white font-extrabold group-hover:scale-110 transition-transform">S</div>
+                <span class="font-extrabold text-xl tracking-tighter text-deepNavy dark:text-white">SmartStock</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#features" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Fonctionnalités</a>
+                <a href="#benefits" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Avantages</a>
+                <a href="#pricing" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Tarifs</a>
+                <a href="/promoteur/connexion" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Espace promoteur</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="/promoteur/connexion" class="hidden sm:block text-sm font-semibold text-textSecondary hover:text-deepNavy transition-colors">Espace promoteur</a>
+                <a href="{{ download_url }}" class="bg-primaryBlue text-white px-5 py-2.5 rounded-input text-sm font-bold hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primaryBlue/20">
+                    Télécharger
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-darkBg py-20 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-12">
+                <div class="col-span-2">
+                    <a href="/" class="flex items-center gap-3 mb-6">
+                        <div class="w-9 h-9 bg-primaryBlue rounded-lg flex items-center justify-center text-white font-extrabold">S</div>
+                        <span class="font-extrabold text-xl tracking-tighter text-white">SmartStock</span>
+                    </a>
+                    <p class="text-gray-400 text-sm max-w-xs mb-6">
+                        La gestion de boutique simple et puissante, pensée pour les commerçants africains.
+                    </p>
+                    <button id="dark-toggle" class="p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path></svg>
+                    </button>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 text-sm">Produit</h4>
+                    <ul class="space-y-4 text-sm text-gray-400">
+                        <li><a href="#features" class="hover:text-primaryBlue transition-colors">Fonctionnalités</a></li>
+                        <li><a href="#pricing" class="hover:text-primaryBlue transition-colors">Tarifs</a></li>
+                        <li><a href="{{ download_url }}" class="hover:text-primaryBlue transition-colors">Télécharger</a></li>
+                        <li><a href="/promoteur/connexion" class="hover:text-primaryBlue transition-colors">Espace promoteur</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 text-sm">Contact</h4>
+                    <ul class="space-y-4 text-sm text-gray-400">
+                        <li><a href="https://wa.me/2290190637730" class="hover:text-primaryBlue transition-colors">WhatsApp</a></li>
+                        <li><a href="mailto:support@smartstock.app" class="hover:text-primaryBlue transition-colors">support@smartstock.app</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-20 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-gray-500">© 2026 SmartStock. Tous droits réservés.</p>
+                <p class="text-xs text-gray-500">Made in Benin 🇧🇯</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'landing/js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

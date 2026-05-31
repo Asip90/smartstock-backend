@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 
@@ -7,6 +8,9 @@ class PromoCode(models.Model):
     code = models.CharField(max_length=40, unique=True)
     influencer_name = models.CharField(max_length=120)
     influencer_id = models.CharField(max_length=120, blank=True)
+    # Compte de connexion du promoteur (espace promoteur). Créé en base/admin.
+    owner = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL, related_name='promo_codes')
     commission_pct = models.PositiveIntegerField(default=25)
     trial_months = models.PositiveIntegerField(default=3)
     active = models.BooleanField(default=True)
@@ -14,6 +18,23 @@ class PromoCode(models.Model):
 
     def __str__(self):
         return f'{self.code} ({self.influencer_name})'
+
+
+class WithdrawalRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('paid', 'Payé'),
+        ('rejected', 'Rejeté'),
+    ]
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='withdrawals')
+    amount = models.PositiveIntegerField()  # FCFA
+    contact = models.CharField(max_length=120, blank=True)  # numéro Mobile Money
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.owner.username} - {self.amount} ({self.status})'
 
 
 class Referral(models.Model):

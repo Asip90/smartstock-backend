@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon espace | SmartStock</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { primaryBlue:'#1A56DB', accentCyan:'#06B6D4', deepNavy:'#1E3A5F', surface:'#F1F5F9',
+                successGreen:'#16A34A', warningAmber:'#F59E0B', textSecondary:'#64748B', borderColor:'#E2E8F0' },
+      fontFamily: { sans:['Poppins','sans-serif'] } } } }
+  </script>
+</head>
+<body class="font-sans bg-surface text-deepNavy min-h-screen">
+  <header class="bg-white border-b border-borderColor">
+    <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-primaryBlue rounded-lg flex items-center justify-center text-white font-extrabold">S</div>
+        <span class="font-extrabold tracking-tight">SmartStock <span class="text-textSecondary font-medium">· Promoteur</span></span>
+      </div>
+      <a href="{% url 'promoter_logout' %}" class="text-sm font-semibold text-textSecondary hover:text-primaryBlue">Déconnexion</a>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-8 space-y-8">
+    <div>
+      <h1 class="text-2xl font-extrabold">Bonjour {{ request.user.first_name|default:request.user.username }}</h1>
+      <p class="text-sm text-textSecondary">Suivez vos gains et demandez vos retraits.</p>
+    </div>
+
+    {% if error %}
+      <div class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{{ error }}</div>
+    {% endif %}
+
+    <!-- Soldes -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white rounded-2xl border border-borderColor p-5">
+        <div class="text-2xl font-extrabold text-primaryBlue">{{ balance.available }}<span class="text-sm"> F</span></div>
+        <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest mt-1">Disponible</div>
+      </div>
+      <div class="bg-white rounded-2xl border border-borderColor p-5">
+        <div class="text-2xl font-extrabold text-deepNavy">{{ balance.earned }}<span class="text-sm"> F</span></div>
+        <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest mt-1">Total gagné</div>
+      </div>
+      <div class="bg-white rounded-2xl border border-borderColor p-5">
+        <div class="text-2xl font-extrabold text-warningAmber">{{ balance.pending }}<span class="text-sm"> F</span></div>
+        <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest mt-1">Retraits en attente</div>
+      </div>
+      <div class="bg-white rounded-2xl border border-borderColor p-5">
+        <div class="text-2xl font-extrabold text-successGreen">{{ balance.paid }}<span class="text-sm"> F</span></div>
+        <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest mt-1">Déjà versé</div>
+      </div>
+    </div>
+
+    <!-- Codes promo -->
+    <div class="bg-white rounded-2xl border border-borderColor p-6">
+      <h2 class="font-bold mb-4">Mes codes promo</h2>
+      {% for c in codes %}
+        <div class="flex items-center justify-between gap-4 py-3 border-b border-borderColor last:border-0">
+          <div>
+            <div class="font-mono font-bold text-lg tracking-wider" id="code-{{ forloop.counter }}">{{ c.code }}</div>
+            <div class="text-xs text-textSecondary">3 mois offerts au filleul · {{ c.commission_pct }}% pour vous (1ʳᵉ année)</div>
+          </div>
+          <button onclick="copyCode('code-{{ forloop.counter }}', this)"
+                  class="text-sm font-bold text-primaryBlue border border-primaryBlue/30 rounded-lg px-3 py-2 hover:bg-primaryBlue/5">
+            Copier
+          </button>
+        </div>
+      {% empty %}
+        <p class="text-sm text-textSecondary">Aucun code promo actif. Contactez l'administrateur.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Demande de retrait -->
+    <div class="bg-white rounded-2xl border border-borderColor p-6">
+      <h2 class="font-bold mb-1">Demander un retrait</h2>
+      <p class="text-xs text-textSecondary mb-4">Solde disponible : <strong>{{ balance.available }} F</strong></p>
+      <form method="post" action="{% url 'promoter_withdraw' %}" class="flex flex-col sm:flex-row gap-3">
+        {% csrf_token %}
+        <input name="amount" type="number" min="1" max="{{ balance.available }}" required placeholder="Montant (F)"
+               class="flex-1 px-4 py-3 rounded-xl border border-borderColor focus:border-primaryBlue focus:ring-2 focus:ring-primaryBlue/20 outline-none">
+        <input name="contact" required placeholder="Numéro Mobile Money"
+               class="flex-1 px-4 py-3 rounded-xl border border-borderColor focus:border-primaryBlue focus:ring-2 focus:ring-primaryBlue/20 outline-none">
+        <button type="submit" {% if balance.available <= 0 %}disabled{% endif %}
+                class="bg-primaryBlue text-white px-6 py-3 rounded-xl font-bold hover:brightness-110 disabled:opacity-40 transition-all">
+          Demander
+        </button>
+      </form>
+    </div>
+
+    <!-- Historique -->
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-white rounded-2xl border border-borderColor p-6">
+        <h2 class="font-bold mb-4">Commissions récentes</h2>
+        {% for com in commissions %}
+          <div class="flex justify-between py-2 border-b border-borderColor last:border-0 text-sm">
+            <span class="text-textSecondary">{{ com.created_at|date:'d/m/Y' }}</span>
+            <span class="font-bold text-successGreen">+{{ com.amount }} F</span>
+          </div>
+        {% empty %}
+          <p class="text-sm text-textSecondary">Aucune commission pour le moment.</p>
+        {% endfor %}
+      </div>
+      <div class="bg-white rounded-2xl border border-borderColor p-6">
+        <h2 class="font-bold mb-4">Mes retraits</h2>
+        {% for w in withdrawals %}
+          <div class="flex justify-between items-center py-2 border-b border-borderColor last:border-0 text-sm">
+            <span class="text-textSecondary">{{ w.created_at|date:'d/m/Y' }}</span>
+            <span class="font-bold">{{ w.amount }} F</span>
+            <span class="text-[11px] font-bold uppercase
+                  {% if w.status == 'paid' %}text-successGreen{% elif w.status == 'rejected' %}text-red-500{% else %}text-warningAmber{% endif %}">
+              {{ w.get_status_display }}
+            </span>
+          </div>
+        {% empty %}
+          <p class="text-sm text-textSecondary">Aucun retrait.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function copyCode(id, btn) {
+      const text = document.getElementById(id).innerText.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        const old = btn.innerText; btn.innerText = 'Copié ✓';
+        setTimeout(() => btn.innerText = old, 1500);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,11 +1,29 @@
 from django.contrib import admin
-from .models import PromoCode, Referral, Transaction, Commission
+from django.utils import timezone
+from .models import PromoCode, Referral, Transaction, Commission, WithdrawalRequest
 
 
 @admin.register(PromoCode)
 class PromoCodeAdmin(admin.ModelAdmin):
-    list_display = ('code', 'influencer_name', 'commission_pct', 'trial_months', 'active', 'created_at')
-    search_fields = ('code', 'influencer_name')
+    list_display = ('code', 'influencer_name', 'owner', 'commission_pct', 'trial_months', 'active', 'created_at')
+    search_fields = ('code', 'influencer_name', 'owner__username')
+    autocomplete_fields = ('owner',)
+
+
+@admin.register(WithdrawalRequest)
+class WithdrawalRequestAdmin(admin.ModelAdmin):
+    list_display = ('owner', 'amount', 'contact', 'status', 'created_at', 'processed_at')
+    list_filter = ('status',)
+    search_fields = ('owner__username', 'contact')
+    actions = ['mark_paid', 'mark_rejected']
+
+    @admin.action(description='Marquer comme payé')
+    def mark_paid(self, request, queryset):
+        queryset.update(status='paid', processed_at=timezone.now())
+
+    @admin.action(description='Rejeter')
+    def mark_rejected(self, request, queryset):
+        queryset.update(status='rejected', processed_at=timezone.now())
 
 
 @admin.register(Referral)

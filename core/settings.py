@@ -43,7 +43,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,3 +89,7 @@ FIREBASE_SERVICE_ACCOUNT_JSON = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON', 
 
 PRICE_MONTHLY = int(os.environ.get('PRICE_MONTHLY', '1900'))
 PRICE_YEARLY = int(os.environ.get('PRICE_YEARLY', '15000'))
+
+# Lien de téléchargement de l'app (Play Store / APK direct).
+APP_DOWNLOAD_URL = os.environ.get('APP_DOWNLOAD_URL', '#')
+STATICFILES_DIRS = [BASE_DIR / 'static']

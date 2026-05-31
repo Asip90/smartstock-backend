@@ -1,0 +1,233 @@
+{% extends 'landing/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- HERO -->
+<section class="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-white dark:bg-darkBg">
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-12 items-center">
+        <div class="md:col-span-7 space-y-8 animate-reveal">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface dark:bg-darkSurface rounded-full border border-borderColor dark:border-gray-700">
+                <span class="text-[11px] font-bold text-primaryBlue uppercase tracking-wider">Made in Benin 🇧🇯</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-deepNavy dark:text-white leading-[1.1] tracking-tightest">
+                Gérez votre boutique,<br>
+                <span class="text-primaryBlue">pas vos cahiers</span>
+            </h1>
+            <p class="text-lg text-textSecondary dark:text-gray-400 max-w-lg leading-relaxed">
+                SmartStock vous permet de suivre vos produits, enregistrer vos ventes, gérer votre stock et connaître vos bénéfices — directement depuis votre téléphone, même sans connexion.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                <a href="{{ download_url }}" class="bg-primaryBlue text-white px-8 py-4 rounded-input font-bold text-center hover:brightness-110 transition-all shadow-xl shadow-primaryBlue/25">
+                    Télécharger l'app
+                </a>
+                <a href="#pricing" class="border border-borderColor dark:border-gray-700 text-deepNavy dark:text-white px-8 py-4 rounded-input font-bold text-center hover:bg-surface dark:hover:bg-darkSurface transition-all">
+                    Voir les tarifs
+                </a>
+            </div>
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 pt-6 text-xs text-textSecondary font-medium">
+                <span class="flex items-center gap-2">✓ 1 mois d'essai gratuit</span>
+                <span class="text-gray-300 dark:text-gray-700">·</span>
+                <span class="flex items-center gap-2">✓ Fonctionne hors-ligne</span>
+                <span class="text-gray-300 dark:text-gray-700">·</span>
+                <span class="flex items-center gap-2">✓ Sans engagement</span>
+            </div>
+        </div>
+
+        <div class="md:col-span-5 relative animate-reveal [animation-delay:200ms]">
+            <div class="relative mx-auto w-full max-w-[280px]">
+                <div class="relative bg-gray-900 rounded-[3rem] p-3 shadow-2xl border-[8px] border-gray-800">
+                    <div class="bg-white dark:bg-darkSurface rounded-[2.5rem] overflow-hidden aspect-[9/19.5]">
+                        <div class="w-full h-full bg-surface dark:bg-darkBg flex items-center justify-center p-4">
+                            <div class="w-full h-full border border-dashed border-gray-300 dark:border-gray-700 rounded-3xl flex items-center justify-center">
+                                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Capture de l'app</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-4 bg-primaryBlue/10 blur-2xl rounded-full"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AVANTAGES -->
+<section id="benefits" class="bg-surface dark:bg-darkSurface py-16 border-y border-borderColor dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-borderColor dark:divide-gray-800">
+            <div class="py-8 lg:py-0 lg:px-8 text-center lg:text-left">
+                <div class="text-2xl font-extrabold text-primaryBlue tracking-tightest mb-1">Hors-ligne</div>
+                <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest">Vendez sans connexion</div>
+            </div>
+            <div class="py-8 lg:py-0 lg:px-8 text-center lg:text-left">
+                <div class="text-2xl font-extrabold text-primaryBlue tracking-tightest mb-1">Reçus PDF</div>
+                <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest">À votre image</div>
+            </div>
+            <div class="py-8 lg:py-0 lg:px-8 text-center lg:text-left">
+                <div class="text-2xl font-extrabold text-primaryBlue tracking-tightest mb-1">Bénéfice</div>
+                <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest">Calculé en temps réel</div>
+            </div>
+            <div class="py-8 lg:py-0 lg:px-8 text-center lg:text-left">
+                <div class="text-2xl font-extrabold text-primaryBlue tracking-tightest mb-1">Vocal</div>
+                <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest">Vendez à la voix</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FONCTIONNALITÉS (zigzag) -->
+<section id="features" class="py-24 space-y-32 bg-white dark:bg-darkBg">
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center reveal-on-scroll">
+        <div class="order-2 md:order-1 relative">
+            <div class="aspect-square bg-surface dark:bg-darkSurface rounded-card border border-borderColor dark:border-gray-800 flex items-center justify-center">
+                <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">Capture · Vente</span>
+            </div>
+        </div>
+        <div class="order-1 md:order-2 space-y-6">
+            <span class="text-5xl font-extrabold text-gray-200 dark:text-gray-800 leading-none">01</span>
+            <h3 class="text-2xl font-bold text-deepNavy dark:text-white tracking-tighter">Vendez en quelques secondes</h3>
+            <p class="text-sm text-textSecondary dark:text-gray-400 leading-relaxed max-w-md">
+                Recherchez un article, ajoutez-le au panier, ajustez la quantité et validez. Un reçu PDF professionnel (avec votre nom, RCCM, IFU) est généré instantanément.
+            </p>
+            <ul class="space-y-3 pt-2">
+                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Recherche instantanée & filtre par catégorie</li>
+                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Reçu PDF à imprimer ou partager</li>
+                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Stock mis à jour automatiquement</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 h-px bg-borderColor dark:bg-gray-800"></div>
+
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center reveal-on-scroll">
+        <div class="space-y-6">
+            <span class="text-5xl font-extrabold text-gray-200 dark:text-gray-800 leading-none">02</span>
+            <h3 class="text-2xl font-bold text-deepNavy dark:text-white tracking-tighter">Vos bénéfices, en clair</h3>
+            <p class="text-sm text-textSecondary dark:text-gray-400 leading-relaxed max-w-md">
+                Renseignez le prix de revient de vos produits et SmartStock calcule automatiquement votre bénéfice et votre marge — du jour comme de la période.
+            </p>
+            <div class="flex gap-4">
+                <div class="p-4 bg-surface dark:bg-darkSurface rounded-xl border border-borderColor dark:border-gray-800 flex-1">
+                    <div class="text-lg font-bold text-successGreen">Bénéfice</div>
+                    <div class="text-[10px] text-textSecondary uppercase font-bold tracking-widest">Du jour & par période</div>
+                </div>
+                <div class="p-4 bg-surface dark:bg-darkSurface rounded-xl border border-borderColor dark:border-gray-800 flex-1">
+                    <div class="text-lg font-bold text-primaryBlue">Stock</div>
+                    <div class="text-[10px] text-textSecondary uppercase font-bold tracking-widest">Alertes stock critique</div>
+                </div>
+            </div>
+        </div>
+        <div class="relative">
+            <div class="aspect-square bg-surface dark:bg-darkSurface rounded-card border border-borderColor dark:border-gray-800 flex items-center justify-center">
+                <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">Capture · Statistiques</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 h-px bg-borderColor dark:bg-gray-800"></div>
+
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center reveal-on-scroll">
+        <div class="order-2 md:order-1 relative">
+            <div class="aspect-square bg-surface dark:bg-darkSurface rounded-card border border-borderColor dark:border-gray-800 flex items-center justify-center">
+                <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">Capture · Vocal & équipe</span>
+            </div>
+        </div>
+        <div class="order-1 md:order-2 space-y-6">
+            <span class="text-5xl font-extrabold text-gray-200 dark:text-gray-800 leading-none">03</span>
+            <h3 class="text-2xl font-bold text-deepNavy dark:text-white tracking-tighter">Hors-ligne, vocal et en équipe</h3>
+            <p class="text-sm text-textSecondary dark:text-gray-400 leading-relaxed max-w-md">
+                Travaillez même sans réseau : tout se synchronise au retour de la connexion. Enregistrez une vente à la voix, et invitez un cogérant avec des accès limités.
+            </p>
+            <ul class="space-y-3 pt-2">
+                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Mode hors-ligne avec synchronisation</li>
+                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Assistant vocal intelligent</li>
+                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Plusieurs boutiques & invitations</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- COMMENT ÇA MARCHE -->
+<section class="py-24 bg-surface dark:bg-darkSurface">
+    <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-3xl font-extrabold text-deepNavy dark:text-white tracking-tighter text-center mb-16">Démarrez en 3 étapes</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="text-center space-y-3">
+                <div class="w-12 h-12 mx-auto bg-primaryBlue text-white rounded-full flex items-center justify-center font-extrabold">1</div>
+                <h3 class="font-bold text-deepNavy dark:text-white">Téléchargez</h3>
+                <p class="text-sm text-textSecondary dark:text-gray-400">Installez SmartStock et créez votre boutique en 2 minutes.</p>
+            </div>
+            <div class="text-center space-y-3">
+                <div class="w-12 h-12 mx-auto bg-primaryBlue text-white rounded-full flex items-center justify-center font-extrabold">2</div>
+                <h3 class="font-bold text-deepNavy dark:text-white">Ajoutez vos produits</h3>
+                <p class="text-sm text-textSecondary dark:text-gray-400">Prix de vente, prix de revient et quantité. C'est prêt.</p>
+            </div>
+            <div class="text-center space-y-3">
+                <div class="w-12 h-12 mx-auto bg-primaryBlue text-white rounded-full flex items-center justify-center font-extrabold">3</div>
+                <h3 class="font-bold text-deepNavy dark:text-white">Vendez & suivez</h3>
+                <p class="text-sm text-textSecondary dark:text-gray-400">Encaissez, imprimez le reçu et suivez vos bénéfices.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TARIFS -->
+<section id="pricing" class="py-24 bg-white dark:bg-darkBg">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-extrabold text-deepNavy dark:text-white tracking-tighter">Un tarif simple, sans surprise</h2>
+            <p class="text-textSecondary dark:text-gray-400 mt-3">Essai gratuit, puis choisissez la formule qui vous convient.</p>
+        </div>
+
+        <div class="max-w-3xl mx-auto grid md:grid-cols-2 gap-6">
+            <!-- Gratuit -->
+            <div class="rounded-card border border-borderColor dark:border-gray-800 p-8 bg-white dark:bg-darkSurface">
+                <div class="text-sm font-bold text-textSecondary uppercase tracking-widest">Gratuit</div>
+                <div class="mt-3 text-3xl font-extrabold text-deepNavy dark:text-white">0 F</div>
+                <p class="text-xs text-textSecondary mt-1">Les fonctions essentielles</p>
+                <ul class="mt-6 space-y-3 text-sm text-deepNavy dark:text-gray-300">
+                    <li class="flex gap-2"><span class="text-successGreen">✓</span> 1 boutique</li>
+                    <li class="flex gap-2"><span class="text-successGreen">✓</span> Produits, ventes, réapprovisionnement</li>
+                    <li class="flex gap-2"><span class="text-successGreen">✓</span> Reçus PDF</li>
+                </ul>
+            </div>
+            <!-- Pro -->
+            <div class="rounded-card border-2 border-primaryBlue p-8 bg-primaryBlue/[0.03] relative">
+                <span class="absolute top-6 right-6 text-[9px] bg-primaryBlue text-white px-2 py-1 rounded uppercase font-bold">Recommandé</span>
+                <div class="text-sm font-bold text-primaryBlue uppercase tracking-widest">Pro</div>
+                <div class="mt-3 flex items-end gap-2">
+                    <span class="text-3xl font-extrabold text-deepNavy dark:text-white">{{ price_monthly }} F</span>
+                    <span class="text-sm text-textSecondary mb-1">/ mois</span>
+                </div>
+                <p class="text-xs text-textSecondary mt-1">ou {{ price_yearly }} F / an (~34 % d'économie)</p>
+                <ul class="mt-6 space-y-3 text-sm text-deepNavy dark:text-gray-300">
+                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Boutiques illimitées</li>
+                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Statistiques avancées (bénéfice, marge)</li>
+                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Assistant vocal</li>
+                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Invitations & cogérants</li>
+                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Reçus sans la mention SmartStock</li>
+                </ul>
+                <a href="{{ download_url }}" class="mt-8 block text-center bg-primaryBlue text-white py-3 rounded-input font-bold hover:brightness-110 transition-all">
+                    Commencer l'essai
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA FINAL -->
+<section id="cta" class="bg-primaryBlue py-20">
+    <div class="max-w-4xl mx-auto px-6 text-center space-y-8">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tighter">
+            Prêt à mieux gérer votre boutique ?
+        </h2>
+        <p class="text-white/80 text-lg">
+            Téléchargez SmartStock et démarrez votre essai gratuit aujourd'hui.
+        </p>
+        <div class="pt-4">
+            <a href="{{ download_url }}" class="inline-block bg-white text-primaryBlue px-10 py-4 rounded-input font-bold hover:bg-surface transition-all shadow-2xl">
+                Télécharger l'app
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
