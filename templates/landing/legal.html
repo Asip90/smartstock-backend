@@ -1,0 +1,23 @@
+{% extends 'landing/base.html' %}
+
+{% block title %}{{ doc_title }} | SmartStock{% endblock %}
+
+{% block content %}
+<section class="pt-32 pb-24 bg-white dark:bg-darkBg min-h-screen">
+    <div class="max-w-3xl mx-auto px-6">
+        <a href="/" class="text-sm font-semibold text-primaryBlue hover:underline">← Retour à l'accueil</a>
+        <h1 class="mt-6 text-3xl md:text-4xl font-extrabold text-deepNavy dark:text-white tracking-tighter">{{ doc_title }}</h1>
+        <p class="mt-2 text-xs text-textSecondary uppercase tracking-widest font-bold">Dernière mise à jour : {{ doc_updated }}</p>
+        <p class="mt-6 text-textSecondary dark:text-gray-400 leading-relaxed">{{ doc_intro }}</p>
+
+        <div class="mt-10 space-y-6">
+            {% for section in doc_sections %}
+            <div class="rounded-card border border-borderColor dark:border-gray-800 p-6 bg-white dark:bg-darkSurface">
+                <h2 class="font-bold text-deepNavy dark:text-white">{{ section.0 }}</h2>
+                <p class="mt-2 text-sm text-textSecondary dark:text-gray-400 leading-relaxed">{{ section.1 }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -2,13 +2,18 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import landing
+from .views import landing, legal
 from billing import promoter_views
 
 urlpatterns = [
     path('', landing, name='landing'),
     path('admin/', admin.site.urls),
     path('api/', include('billing.urls')),
+
+    # Pages legales
+    path('confidentialite', legal, {'doc': 'confidentialite'}, name='privacy'),
+    path('conditions', legal, {'doc': 'conditions'}, name='terms'),
+    path('mentions-legales', legal, {'doc': 'mentions-legales'}, name='legal_notice'),
 
     # Espace promoteur
     path('promoteur/connexion', promoter_views.promoter_login, name='promoter_login'),
