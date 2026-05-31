@@ -31,7 +31,12 @@ def _body(request):
 
 @csrf_exempt
 def signup(request):
-    """Initialise l'essai. {promo_code?}. Essai = 3 mois si code valide, sinon 1 mois."""
+    """Initialise l'essai. {promo_code?}. Essai = 3 mois si code valide, sinon 1 mois.
+
+    Un utilisateur ne peut bénéficier de l'essai et d'un code promo qu'UNE SEULE
+    FOIS à vie : tout appel ultérieur est rejeté (évite qu'on régénère un code à
+    chaque fois pour ré-obtenir des mois gratuits).
+    """
     if request.method != 'POST':
         return HttpResponseBadRequest('POST requis')
     uid, email = _auth(request)
@@ -40,21 +45,31 @@ def signup(request):
 
     data = _body(request)
     code = (data.get('promo_code') or '').strip()
+
+    # Un code promo déjà utilisé par ce compte ne peut pas l'être à nouveau.
+    if Referral.objects.filter(referred_uid=uid).exists():
+        return JsonResponse({'error': 'code_promo_deja_utilise'}, status=409)
+
+    # Essai déjà initialisé (avec ou sans code) -> pas de ré-initialisation.
+    existing = fb.get_entitlement(uid)
+    if existing:
+        if code:
+            return JsonResponse({'error': 'essai_deja_utilise'}, status=409)
+        return JsonResponse({'status': existing.get('status', 'free'), 'already': True})
+
     trial_months = 1
     if code:
         promo = PromoCode.objects.filter(code__iexact=code, active=True).first()
-        if promo:
-            trial_months = promo.trial_months
-            # 1 seul parrainage par filleul.
-            if not Referral.objects.filter(referred_uid=uid).exists():
-                Referral.objects.create(
-                    promo_code=promo,
-                    referred_uid=uid,
-                    referred_email=email,
-                    first_year_end=timezone.now() + timedelta(days=365),
-                )
-        else:
+        if not promo:
             return JsonResponse({'error': 'code_promo_invalide'}, status=400)
+        trial_months = promo.trial_months
+        # 1 seul parrainage par filleul (referred_uid est unique en base).
+        Referral.objects.create(
+            promo_code=promo,
+            referred_uid=uid,
+            referred_email=email,
+            first_year_end=timezone.now() + timedelta(days=365),
+        )
 
     trial_end = timezone.now() + timedelta(days=30 * trial_months)
     fb.set_entitlement(uid, plan='pro', status='trialing', trial_end=trial_end,

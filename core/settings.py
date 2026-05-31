@@ -16,6 +16,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -93,3 +94,34 @@ PRICE_YEARLY = int(os.environ.get('PRICE_YEARLY', '15000'))
 # Lien de téléchargement de l'app (Play Store / APK direct).
 APP_DOWNLOAD_URL = os.environ.get('APP_DOWNLOAD_URL', '#')
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# ── Admin (Jazzmin) ──────────────────────────────────────────────────────────
+JAZZMIN_SETTINGS = {
+    'site_title': 'SmartStock Admin',
+    'site_header': 'SmartStock',
+    'site_brand': 'SmartStock',
+    'welcome_sign': 'Espace administration SmartStock',
+    'copyright': 'SmartStock',
+    'search_model': ['billing.PromoCode', 'billing.WithdrawalRequest'],
+    'topmenu_links': [
+        {'name': 'Site', 'url': '/', 'new_window': True},
+        {'app': 'billing'},
+    ],
+    'icons': {
+        'auth.User': 'fas fa-user',
+        'auth.Group': 'fas fa-users',
+        'billing.PromoCode': 'fas fa-ticket-alt',
+        'billing.Referral': 'fas fa-user-plus',
+        'billing.Transaction': 'fas fa-receipt',
+        'billing.Commission': 'fas fa-coins',
+        'billing.WithdrawalRequest': 'fas fa-money-bill-wave',
+    },
+    'order_with_respect_to': ['billing', 'auth'],
+}
+JAZZMIN_UI_TWEAKS = {
+    'theme': 'flatly',
+    'navbar': 'navbar-dark',
+    'accent': 'accent-primary',
+    'navbar_fixed': True,
+    'sidebar_fixed': True,
+}
