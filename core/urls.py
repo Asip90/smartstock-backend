@@ -2,13 +2,19 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import landing, legal
+from .views import landing, legal, payment_ok, download_apk
 from billing import promoter_views
 
 urlpatterns = [
     path('', landing, name='landing'),
     path('admin/', admin.site.urls),
     path('api/', include('billing.urls')),
+
+    # Téléchargement de l'APK Android (boutons « Télécharger l'app »).
+    path('telecharger', download_apk, name='download_apk'),
+
+    # Retour de paiement FedaPay (détecté par la WebView de l'app).
+    path('paiement/ok', payment_ok, name='payment_ok'),
 
     # Pages legales
     path('confidentialite', legal, {'doc': 'confidentialite'}, name='privacy'),

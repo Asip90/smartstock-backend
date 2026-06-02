@@ -1,5 +1,7 @@
+from pathlib import Path
+
 from django.conf import settings
-from django.http import Http404
+from django.http import Http404, HttpResponse, FileResponse
 from django.shortcuts import render
 
 _SUPPORT = "Support : WhatsApp +229 01 90 63 77 30 — support@smartstock.app"
@@ -83,6 +85,39 @@ def landing(request):
         'price_monthly': settings.PRICE_MONTHLY,
         'price_yearly': settings.PRICE_YEARLY,
     })
+
+
+def download_apk(request):
+    """Sert l'APK Android (téléchargement depuis la landing page).
+    Le fichier est versionné dans le repo sous downloads/smartstock.apk."""
+    apk_path = Path(settings.BASE_DIR) / 'downloads' / 'smartstock.apk'
+    if not apk_path.exists():
+        raise Http404("APK indisponible")
+    return FileResponse(
+        open(apk_path, 'rb'),
+        as_attachment=True,
+        filename='SmartStock.apk',
+        content_type='application/vnd.android.package-archive',
+    )
+
+
+def payment_ok(request):
+    """Page de retour après paiement FedaPay. L'app mobile détecte l'URL
+    « /paiement/ok » dans sa WebView pour la fermer automatiquement ; l'accès
+    Pro est activé en arrière-plan par le webhook (Firestore subscriptions/{uid})."""
+    html = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paiement reçu</title>
+<style>body{font-family:system-ui,Segoe UI,Roboto,sans-serif;background:#F1F5F9;
+color:#1E3A5F;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}
+.card{background:#fff;border:1px solid #E2E8F0;border-radius:20px;padding:32px;max-width:340px;
+text-align:center}.check{width:72px;height:72px;border-radius:50%;background:#16A34A;color:#fff;
+display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 16px}
+h1{font-size:20px;margin:0 0 8px}p{color:#475569;font-size:14px;line-height:1.5}</style></head>
+<body><div class="card"><div class="check">&#10003;</div>
+<h1>Paiement reçu</h1><p>Votre abonnement SmartStock Pro est en cours d'activation.
+Vous pouvez revenir à l'application.</p></div></body></html>"""
+    return HttpResponse(html)
 
 
 def legal(request, doc):

@@ -5,9 +5,17 @@ from .models import PromoCode, Referral, Transaction, Commission, WithdrawalRequ
 
 @admin.register(PromoCode)
 class PromoCodeAdmin(admin.ModelAdmin):
-    list_display = ('code', 'influencer_name', 'owner', 'commission_pct', 'trial_months', 'active', 'created_at')
+    list_display = ('code', 'influencer_name', 'owner', 'commission_pct',
+                    'trial_days', 'trial_months', 'effective_days', 'active', 'created_at')
+    # Édition rapide directement depuis la liste (jours d'essai, commission, statut).
+    list_editable = ('trial_days', 'trial_months', 'commission_pct', 'active')
+    list_filter = ('active',)
     search_fields = ('code', 'influencer_name', 'owner__username')
     autocomplete_fields = ('owner',)
+
+    @admin.display(description="Essai effectif (jours)")
+    def effective_days(self, obj):
+        return obj.trial_duration_days()
 
 
 @admin.register(WithdrawalRequest)

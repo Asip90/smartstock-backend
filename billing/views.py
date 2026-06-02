@@ -57,12 +57,13 @@ def signup(request):
             return JsonResponse({'error': 'essai_deja_utilise'}, status=409)
         return JsonResponse({'status': existing.get('status', 'free'), 'already': True})
 
-    trial_months = 1
+    trial_days = 30  # essai par défaut sans code
     if code:
         promo = PromoCode.objects.filter(code__iexact=code, active=True).first()
         if not promo:
             return JsonResponse({'error': 'code_promo_invalide'}, status=400)
-        trial_months = promo.trial_months
+        # Durée fixée librement dans l'admin (en jours, sinon en mois).
+        trial_days = promo.trial_duration_days()
         # 1 seul parrainage par filleul (referred_uid est unique en base).
         Referral.objects.create(
             promo_code=promo,
@@ -71,10 +72,10 @@ def signup(request):
             first_year_end=timezone.now() + timedelta(days=365),
         )
 
-    trial_end = timezone.now() + timedelta(days=30 * trial_months)
+    trial_end = timezone.now() + timedelta(days=trial_days)
     fb.set_entitlement(uid, plan='pro', status='trialing', trial_end=trial_end,
                        current_period_end=trial_end)
-    return JsonResponse({'status': 'trialing', 'trial_months': trial_months})
+    return JsonResponse({'status': 'trialing', 'trial_days': trial_days})
 
 
 @csrf_exempt
@@ -93,10 +94,14 @@ def subscribe(request):
 
     tx = Transaction.objects.create(uid=uid, email=email, plan=plan, amount=amount)
     try:
+        # Après paiement, FedaPay redirige vers cette page : l'app détecte l'URL
+        # « /paiement/ok » dans la WebView pour la fermer automatiquement.
+        callback_url = request.build_absolute_uri('/paiement/ok')
         checkout = fedapay.create_checkout(
             amount=amount,
             description=f'Abonnement SmartStock ({plan})',
             customer_email=email,
+            callback_url=callback_url,
         )
     except Exception as e:
         tx.status = 'failed'

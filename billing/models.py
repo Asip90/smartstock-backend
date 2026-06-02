@@ -11,10 +11,20 @@ class PromoCode(models.Model):
     # Compte de connexion du promoteur (espace promoteur). Créé en base/admin.
     owner = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.SET_NULL, related_name='promo_codes')
-    commission_pct = models.PositiveIntegerField(default=25)
-    trial_months = models.PositiveIntegerField(default=3)
+    commission_pct = models.PositiveIntegerField(
+        default=25, help_text='Commission versée au promoteur (0 = code sans commission).')
+    trial_months = models.PositiveIntegerField(
+        default=3, help_text="Durée d'essai en MOIS (utilisée si « jours d'essai » = 0).")
+    trial_days = models.PositiveIntegerField(
+        default=0,
+        help_text="Durée d'essai en JOURS. Si > 0, prioritaire sur les mois "
+                  "(ex : 45 pour 45 jours). Modifiable à tout moment.")
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def trial_duration_days(self) -> int:
+        """Durée d'essai effective en jours : trial_days si > 0, sinon trial_months*30."""
+        return self.trial_days if (self.trial_days or 0) > 0 else 30 * self.trial_months
 
     def __str__(self):
         return f'{self.code} ({self.influencer_name})'

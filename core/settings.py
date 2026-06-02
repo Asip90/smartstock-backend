@@ -91,8 +91,9 @@ FIREBASE_SERVICE_ACCOUNT_JSON = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON', 
 PRICE_MONTHLY = int(os.environ.get('PRICE_MONTHLY', '1900'))
 PRICE_YEARLY = int(os.environ.get('PRICE_YEARLY', '15000'))
 
-# Lien de téléchargement de l'app (Play Store / APK direct).
-APP_DOWNLOAD_URL = os.environ.get('APP_DOWNLOAD_URL', '#')
+# Lien de téléchargement de l'app. Par défaut : APK servi par le backend
+# (/telecharger). Surchargeable via l'env (ex. lien Play Store plus tard).
+APP_DOWNLOAD_URL = os.environ.get('APP_DOWNLOAD_URL', '/telecharger')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # ── Admin (Jazzmin) ──────────────────────────────────────────────────────────
