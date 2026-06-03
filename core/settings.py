@@ -70,8 +70,12 @@ else:
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Stockage non-manifest : WhiteNoise compresse les statiques mais ne réécrit pas
+# les références internes des JS, ce qui évite l'échec de `collectstatic` quand
+# un fichier référence un sourcemap absent (ex. bootstrap.bundle.min.js.map de
+# django-jazzmin). Le hash anti-cache n'est pas nécessaire pour l'admin.
 STORAGES = {
-    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
 }
 
