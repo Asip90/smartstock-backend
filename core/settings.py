@@ -17,6 +17,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 INSTALLED_APPS = [
     'jazzmin',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -28,6 +29,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -40,6 +42,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 WSGI_APPLICATION = 'core.wsgi.application'
+
+# CORS : l'app Flutter Web appelle l'API depuis une autre origine (localhost en
+# dev, domaine en prod). L'auth se fait par token Bearer Firebase (pas de cookie
+# de session), donc autoriser toutes les origines est sans risque ici.
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
