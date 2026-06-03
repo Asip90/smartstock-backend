@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -15,7 +16,7 @@
 <body class="font-sans bg-surface text-deepNavy min-h-screen flex items-center justify-center px-6">
   <div class="w-full max-w-sm bg-white rounded-2xl border border-borderColor p-8 shadow-sm">
     <div class="flex items-center gap-2 mb-6">
-      <div class="w-9 h-9 bg-primaryBlue rounded-xl flex items-center justify-center text-white font-extrabold">S</div>
+      <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-9 h-9 rounded-xl object-cover">
       <span class="font-extrabold text-lg tracking-tight">SmartStock</span>
     </div>
     <h1 class="text-2xl font-extrabold mb-1">Espace promoteur</h1>
@@ -42,7 +43,10 @@
         Se connecter
       </button>
     </form>
-    <a href="/" class="block text-center text-xs text-textSecondary mt-6 hover:text-primaryBlue">← Retour au site</a>
+    <p class="text-center text-xs text-textSecondary mt-6">
+      Pas encore promoteur ? <a href="/promoteur/inscription" class="font-semibold text-primaryBlue hover:underline">Créer un compte</a>
+    </p>
+    <a href="/" class="block text-center text-xs text-textSecondary mt-3 hover:text-primaryBlue">← Retour au site</a>
   </div>
 </body>
 </html>

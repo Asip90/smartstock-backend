@@ -22,6 +22,9 @@ urlpatterns = [
     path('mentions-legales', legal, {'doc': 'mentions-legales'}, name='legal_notice'),
 
     # Espace promoteur
+    path('promoteur/inscription', promoter_views.promoter_signup, name='promoter_signup'),
+    path('promoteur/bienvenue', promoter_views.promoter_welcome, name='promoter_welcome'),
+    path('promoteur/code', promoter_views.promoter_create_code, name='promoter_create_code'),
     path('promoteur/connexion', promoter_views.promoter_login, name='promoter_login'),
     path('promoteur/', promoter_views.promoter_dashboard, name='promoter_dashboard'),
     path('promoteur/retrait', promoter_views.promoter_withdraw, name='promoter_withdraw'),

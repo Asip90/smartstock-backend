@@ -1,0 +1,50 @@
+{% extends 'promoter/promoter_base.html' %}
+{% load static %}
+{% block title %}Devenir promoteur | SmartStock{% endblock %}
+
+{% block body %}
+<div class="w-full max-w-md bg-white rounded-2xl border border-borderColor p-8 shadow-sm motion-pop">
+  <div class="flex items-center gap-2 mb-6">
+    <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-9 h-9 rounded-xl object-cover">
+    <span class="font-extrabold text-lg tracking-tight">SmartStock</span>
+  </div>
+  <h1 class="text-2xl font-extrabold mb-1">Devenez promoteur</h1>
+  <p class="text-sm text-textSecondary mb-6">Créez votre compte, choisissez votre code promo et gagnez 25 % de commission.</p>
+
+  {% if error %}
+    <div class="mb-4 text-sm text-errorRed bg-red-50 border border-red-200 rounded-lg px-3 py-2">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <div>
+      <label class="block text-xs font-bold text-textSecondary mb-1 uppercase tracking-wider">Nom complet</label>
+      <input name="full_name" required autofocus value="{{ data.full_name|default:'' }}"
+             class="w-full px-4 py-3 rounded-xl border border-borderColor focus:border-primaryBlue focus:ring-2 focus:ring-primaryBlue/20 outline-none">
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-textSecondary mb-1 uppercase tracking-wider">E-mail</label>
+      <input name="email" type="email" required value="{{ data.email|default:'' }}"
+             class="w-full px-4 py-3 rounded-xl border border-borderColor focus:border-primaryBlue focus:ring-2 focus:ring-primaryBlue/20 outline-none">
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-textSecondary mb-1 uppercase tracking-wider">Mot de passe</label>
+      <input name="password" type="password" required minlength="6"
+             class="w-full px-4 py-3 rounded-xl border border-borderColor focus:border-primaryBlue focus:ring-2 focus:ring-primaryBlue/20 outline-none">
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-textSecondary mb-1 uppercase tracking-wider">Confirmer le mot de passe</label>
+      <input name="password2" type="password" required minlength="6"
+             class="w-full px-4 py-3 rounded-xl border border-borderColor focus:border-primaryBlue focus:ring-2 focus:ring-primaryBlue/20 outline-none">
+    </div>
+    <button type="submit"
+            class="w-full bg-primaryBlue text-white py-3 rounded-xl font-bold hover:brightness-110 active:scale-95 transition-all">
+      Créer mon compte
+    </button>
+  </form>
+  <p class="text-center text-xs text-textSecondary mt-6">
+    Déjà un compte ? <a href="{% url 'promoter_login' %}" class="font-semibold text-primaryBlue hover:underline">Se connecter</a>
+  </p>
+  <a href="/" class="block text-center text-xs text-textSecondary mt-3 hover:text-primaryBlue">← Retour au site</a>
+</div>
+{% endblock %}
