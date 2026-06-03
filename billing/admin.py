@@ -1,6 +1,49 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils import timezone
-from .models import PromoCode, Referral, Transaction, Commission, WithdrawalRequest
+from .models import (PromoCode, Referral, Transaction, Commission,
+                     WithdrawalRequest, AppConfig)
+from . import firebase_service as fb
+
+
+@admin.register(AppConfig)
+class AppConfigAdmin(admin.ModelAdmin):
+    """Pilote la mise à jour de l'app mobile. À l'enregistrement, synchronise
+    vers Firestore `config/app` (l'app lit ce doc au démarrage)."""
+    list_display = ('latest_build', 'min_build', 'message', 'updated_at')
+    actions = ['sync_now']
+
+    def has_add_permission(self, request):
+        # Enregistrement unique.
+        return not AppConfig.objects.exists()
+
+    def _sync(self, request, obj):
+        try:
+            fb.set_app_config(
+                latest_build=obj.latest_build,
+                min_build=obj.min_build,
+                message=obj.message,
+                store_url=obj.store_url,
+            )
+            self.message_user(
+                request,
+                "Synchronisé vers Firestore (config/app). "
+                f"MAJ {'OBLIGATOIRE' if obj.min_build >= obj.latest_build else 'proposée'} "
+                f"pour les builds < {obj.min_build}.",
+                level=messages.SUCCESS,
+            )
+        except Exception as e:
+            self.message_user(
+                request, f"Enregistré, mais échec de la synchro Firestore : {e}",
+                level=messages.ERROR)
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        self._sync(request, obj)
+
+    @admin.action(description="Resynchroniser vers Firestore maintenant")
+    def sync_now(self, request, queryset):
+        for obj in queryset:
+            self._sync(request, obj)
 
 
 @admin.register(PromoCode)

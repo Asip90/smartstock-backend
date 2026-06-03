@@ -81,6 +81,31 @@ class Transaction(models.Model):
         return f'{self.uid} {self.plan} {self.amount} ({self.status})'
 
 
+class AppConfig(models.Model):
+    """Pilotage de la mise à jour de l'app mobile, synchronisé vers Firestore
+    `config/app` (lu par l'app au démarrage). Enregistrement unique."""
+    latest_build = models.PositiveIntegerField(
+        default=1, help_text="Dernier build publié (le n° après le + dans pubspec).")
+    min_build = models.PositiveIntegerField(
+        default=1,
+        help_text="Build minimum requis : en dessous, la MAJ est OBLIGATOIRE "
+                  "(dialogue bloquant). Mettre = latest_build pour forcer tout le monde.")
+    message = models.CharField(
+        max_length=255, blank=True,
+        default="Une nouvelle version de SmartStock est disponible.")
+    store_url = models.CharField(
+        max_length=300, blank=True,
+        default="https://smartstock.nouyon.site/telecharger")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Mise à jour de l'app"
+        verbose_name_plural = "Mise à jour de l'app"
+
+    def __str__(self):
+        return f"App build {self.latest_build} (min requis {self.min_build})"
+
+
 class Commission(models.Model):
     STATUS_CHOICES = [('pending', 'À verser'), ('paid', 'Versée')]
     referral = models.ForeignKey(Referral, on_delete=models.CASCADE, related_name='commissions')

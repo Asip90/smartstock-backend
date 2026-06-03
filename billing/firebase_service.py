@@ -54,3 +54,16 @@ def get_entitlement(uid: str):
     _ensure_init()
     doc = _db.collection('subscriptions').document(uid).get()
     return doc.to_dict() if doc.exists else None
+
+
+def set_app_config(*, latest_build: int, min_build: int, message: str, store_url: str):
+    """Écrit la config de mise à jour de l'app mobile dans Firestore `config/app`.
+    L'app lit ce doc au démarrage : `latest_build` > build courant -> MAJ proposée ;
+    build courant < `min_build` -> MAJ OBLIGATOIRE (dialogue bloquant)."""
+    _ensure_init()
+    _db.collection('config').document('app').set({
+        'latest_build': int(latest_build),
+        'min_build': int(min_build),
+        'message': message or '',
+        'store_url': store_url or '',
+    }, merge=True)
