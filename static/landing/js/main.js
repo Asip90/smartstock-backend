@@ -3,10 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
-            navbar.classList.add('bg-white/80', 'backdrop-blur-md', 'border-b', 'border-borderColor', 'dark:bg-darkBg/80', 'dark:border-gray-800');
+            navbar.classList.add('bg-white/80', 'backdrop-blur-md', 'border-b', 'border-borderColor');
             navbar.classList.remove('bg-transparent');
         } else {
-            navbar.classList.remove('bg-white/80', 'backdrop-blur-md', 'border-b', 'border-borderColor', 'dark:bg-darkBg/80', 'dark:border-gray-800');
+            navbar.classList.remove('bg-white/80', 'backdrop-blur-md', 'border-b', 'border-borderColor');
             navbar.classList.add('bg-transparent');
         }
     });
@@ -24,26 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     revealElements.forEach(el => revealObserver.observe(el));
 
-    // 3. DARK MODE TOGGLE
-    const darkToggle = document.getElementById('dark-toggle');
-    const html = document.documentElement;
-
-    // Check local storage or preference
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        html.classList.add('dark');
-    } else {
-        html.classList.remove('dark');
+    // 3. MOBILE MENU
+    const mBtn = document.getElementById('mobileMenuBtn');
+    const mMenu = document.getElementById('mobileMenu');
+    const mClose = document.getElementById('mobileMenuClose');
+    function setMobileMenu(open) {
+        if (!mMenu || !mBtn) return;
+        mMenu.classList.toggle('hidden', !open);
+        mMenu.classList.toggle('flex', open);
+        mBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        document.body.style.overflow = open ? 'hidden' : '';
     }
-
-    darkToggle.addEventListener('click', () => {
-        if (html.classList.contains('dark')) {
-            html.classList.remove('dark');
-            localStorage.theme = 'light';
-        } else {
-            html.classList.add('dark');
-            localStorage.theme = 'dark';
-        }
-    });
+    if (mBtn) mBtn.addEventListener('click', () => setMobileMenu(true));
+    if (mClose) mClose.addEventListener('click', () => setMobileMenu(false));
+    document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => setMobileMenu(false)));
 
     // 4. BUTTON ACTIVE EFFECT
     const buttons = document.querySelectorAll('a, button');

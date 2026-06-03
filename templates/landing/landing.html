@@ -36,12 +36,8 @@
         <div class="md:col-span-5 relative animate-reveal [animation-delay:200ms]">
             <div class="relative mx-auto w-full max-w-[280px]">
                 <div class="relative bg-gray-900 rounded-[3rem] p-3 shadow-2xl border-[8px] border-gray-800">
-                    <div class="bg-white dark:bg-darkSurface rounded-[2.5rem] overflow-hidden aspect-[9/19.5]">
-                        <div class="w-full h-full bg-surface dark:bg-darkBg flex items-center justify-center p-4">
-                            <div class="w-full h-full border border-dashed border-gray-300 dark:border-gray-700 rounded-3xl flex items-center justify-center">
-                                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Capture de l'app</span>
-                            </div>
-                        </div>
+                    <div class="bg-white rounded-[2.5rem] overflow-hidden aspect-[9/19.5]">
+                        <img src="{% static 'landing/img/app-dashboard.png' %}" alt="Tableau de bord SmartStock" class="w-full h-full object-cover">
                     </div>
                 </div>
                 <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-4 bg-primaryBlue/10 blur-2xl rounded-full"></div>
@@ -78,8 +74,8 @@
 <section id="features" class="py-24 space-y-32 bg-white dark:bg-darkBg">
     <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center reveal-on-scroll">
         <div class="order-2 md:order-1 relative">
-            <div class="aspect-square bg-surface dark:bg-darkSurface rounded-card border border-borderColor dark:border-gray-800 flex items-center justify-center">
-                <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">Capture · Vente</span>
+            <div class="aspect-square bg-surface rounded-card border border-borderColor overflow-hidden">
+                <img src="{% static 'landing/img/app-articles.png' %}" alt="Liste des articles SmartStock" class="w-full h-full object-cover">
             </div>
         </div>
         <div class="order-1 md:order-2 space-y-6">
@@ -117,8 +113,8 @@
             </div>
         </div>
         <div class="relative">
-            <div class="aspect-square bg-surface dark:bg-darkSurface rounded-card border border-borderColor dark:border-gray-800 flex items-center justify-center">
-                <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">Capture · Statistiques</span>
+            <div class="aspect-square bg-surface rounded-card border border-borderColor overflow-hidden">
+                <img src="{% static 'landing/img/app-ventes.png' %}" alt="Écran de vente SmartStock" class="w-full h-full object-cover">
             </div>
         </div>
     </div>
@@ -127,8 +123,8 @@
 
     <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center reveal-on-scroll">
         <div class="order-2 md:order-1 relative">
-            <div class="aspect-square bg-surface dark:bg-darkSurface rounded-card border border-borderColor dark:border-gray-800 flex items-center justify-center">
-                <span class="text-xs text-gray-400 font-bold uppercase tracking-widest">Capture · Vocal & équipe</span>
+            <div class="aspect-square bg-surface rounded-card border border-borderColor overflow-hidden">
+                <img src="{% static 'landing/img/app-voix.png' %}" alt="Assistant vocal SmartStock" class="w-full h-full object-cover">
             </div>
         </div>
         <div class="order-1 md:order-2 space-y-6">
@@ -210,6 +206,28 @@
                     Commencer l'essai
                 </a>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- PROMOTEUR -->
+<section id="promoteur" class="py-24 bg-surface">
+    <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+            <span class="text-[11px] font-bold text-primaryBlue uppercase tracking-widest">Programme partenaire</span>
+            <h2 class="text-3xl font-extrabold text-deepNavy tracking-tighter">Devenez promoteur SmartStock</h2>
+            <p class="text-textSecondary leading-relaxed">
+                Partagez votre code promo, faites découvrir SmartStock aux commerçants autour de vous et gagnez <span class="font-bold text-deepNavy">25 % de commission</span> sur chaque abonnement. Suivez vos parrainages, votre solde et demandez vos retraits Mobile Money depuis votre espace.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a href="{% url 'promoter_signup' %}" class="bg-primaryBlue text-white px-8 py-4 rounded-input font-bold text-center hover:brightness-110 transition-all">Créer un compte promoteur</a>
+                <a href="{% url 'promoter_login' %}" class="border border-borderColor text-deepNavy px-8 py-4 rounded-input font-bold text-center hover:bg-white transition-all">Espace promoteur</a>
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+            <div class="p-6 bg-white rounded-card border border-borderColor text-center"><div class="text-2xl font-extrabold text-primaryBlue">25%</div><div class="text-[10px] font-bold text-textSecondary uppercase tracking-widest mt-1">Commission</div></div>
+            <div class="p-6 bg-white rounded-card border border-borderColor text-center"><div class="text-2xl font-extrabold text-primaryBlue">Mobile</div><div class="text-[10px] font-bold text-textSecondary uppercase tracking-widest mt-1">Money</div></div>
+            <div class="p-6 bg-white rounded-card border border-borderColor text-center"><div class="text-2xl font-extrabold text-primaryBlue">Suivi</div><div class="text-[10px] font-bold text-textSecondary uppercase tracking-widest mt-1">Temps réel</div></div>
         </div>
     </div>
 </section>
