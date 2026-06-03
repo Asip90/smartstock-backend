@@ -1,0 +1,21 @@
+{% extends 'promoter/promoter_base.html' %}
+{% block title %}Code créé | SmartStock{% endblock %}
+
+{% block body %}
+<div class="w-full max-w-md bg-white rounded-2xl border border-borderColor p-10 shadow-sm text-center motion-pop">
+  <div class="check-circle">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+      <path d="M5 12.5l4 4 10-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <h1 class="text-2xl font-extrabold mt-6 motion-rise d1">Félicitations !</h1>
+  <p class="text-sm text-textSecondary mt-2 motion-rise d2">Ton code promo est prêt à être partagé.</p>
+  <div class="my-6 inline-block px-8 py-4 bg-surface border-2 border-dashed border-primaryBlue rounded-xl motion-rise d2">
+    <span class="text-3xl font-extrabold tracking-[3px] text-primaryBlue">{{ code }}</span>
+  </div>
+  <a href="{% url 'promoter_dashboard' %}"
+     class="block w-full bg-primaryBlue text-white py-4 rounded-xl font-bold hover:brightness-110 active:scale-95 transition-all motion-rise d3">
+    Accéder à mon tableau de bord
+  </a>
+</div>
+{% endblock %}

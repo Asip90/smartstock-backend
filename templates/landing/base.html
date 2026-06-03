@@ -39,31 +39,55 @@
     </script>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-white text-deepNavy selection:bg-primaryBlue selection:text-white dark:bg-darkBg dark:text-gray-100 transition-colors duration-300">
+<body class="bg-white text-deepNavy selection:bg-primaryBlue selection:text-white">
 
     <!-- NAVBAR -->
     <nav id="navbar" class="fixed top-0 w-full h-16 z-50 transition-all duration-300 bg-transparent">
         <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
             <a href="/" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 bg-primaryBlue rounded-lg flex items-center justify-center text-white font-extrabold group-hover:scale-110 transition-transform">S</div>
-                <span class="font-extrabold text-xl tracking-tighter text-deepNavy dark:text-white">SmartStock</span>
+                <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-9 h-9 rounded-lg object-cover group-hover:scale-110 transition-transform">
+                <span class="font-extrabold text-xl tracking-tighter text-deepNavy">SmartStock</span>
             </a>
 
             <div class="hidden md:flex items-center gap-8">
                 <a href="#features" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Fonctionnalités</a>
                 <a href="#benefits" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Avantages</a>
                 <a href="#pricing" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Tarifs</a>
+                <a href="#promoteur" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Promoteur</a>
                 <a href="/promoteur/connexion" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Espace promoteur</a>
             </div>
 
             <div class="flex items-center gap-4">
-                <a href="/promoteur/connexion" class="hidden sm:block text-sm font-semibold text-textSecondary hover:text-deepNavy transition-colors">Espace promoteur</a>
-                <a href="{{ download_url }}" class="bg-primaryBlue text-white px-5 py-2.5 rounded-input text-sm font-bold hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primaryBlue/20">
+                <a href="{{ download_url }}" class="hidden sm:inline-block bg-primaryBlue text-white px-5 py-2.5 rounded-input text-sm font-bold hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primaryBlue/20">
                     Télécharger
                 </a>
+                <button id="mobileMenuBtn" class="md:hidden p-2 -mr-2 text-deepNavy" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobileMenu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
             </div>
         </div>
     </nav>
+
+    <!-- MENU MOBILE -->
+    <div id="mobileMenu" class="fixed inset-0 z-[60] bg-white flex-col hidden">
+        <div class="h-16 px-6 flex items-center justify-between border-b border-borderColor">
+            <a href="/" class="flex items-center gap-3">
+                <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-9 h-9 rounded-lg object-cover">
+                <span class="font-extrabold text-xl tracking-tighter text-deepNavy">SmartStock</span>
+            </a>
+            <button id="mobileMenuClose" class="p-2 -mr-2 text-deepNavy" aria-label="Fermer le menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <nav class="flex flex-col p-6 gap-1">
+            <a href="#features" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Fonctionnalités</a>
+            <a href="#benefits" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Avantages</a>
+            <a href="#pricing" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Tarifs</a>
+            <a href="#promoteur" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Devenir promoteur</a>
+            <a href="/promoteur/connexion" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Espace promoteur</a>
+            <a href="{{ download_url }}" class="mobile-link mt-4 bg-primaryBlue text-white text-center py-4 rounded-input font-bold">Télécharger l'app</a>
+        </nav>
+    </div>
 
     <main>
         {% block content %}{% endblock %}
@@ -75,15 +99,12 @@
             <div class="grid grid-cols-2 md:grid-cols-5 gap-12">
                 <div class="col-span-2">
                     <a href="/" class="flex items-center gap-3 mb-6">
-                        <div class="w-9 h-9 bg-primaryBlue rounded-lg flex items-center justify-center text-white font-extrabold">S</div>
+                        <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-9 h-9 rounded-lg object-cover">
                         <span class="font-extrabold text-xl tracking-tighter text-white">SmartStock</span>
                     </a>
                     <p class="text-gray-400 text-sm max-w-xs mb-6">
                         La gestion de boutique simple et puissante, pensée pour les commerçants africains.
                     </p>
-                    <button id="dark-toggle" class="p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-white transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path></svg>
-                    </button>
                 </div>
                 <div>
                     <h4 class="text-white font-bold mb-6 text-sm">Produit</h4>

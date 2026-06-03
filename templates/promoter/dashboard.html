@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -17,7 +18,7 @@
   <header class="bg-white border-b border-borderColor">
     <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <div class="w-8 h-8 bg-primaryBlue rounded-lg flex items-center justify-center text-white font-extrabold">S</div>
+        <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-8 h-8 rounded-lg object-cover">
         <span class="font-extrabold tracking-tight">SmartStock <span class="text-textSecondary font-medium">· Promoteur</span></span>
       </div>
       <a href="{% url 'promoter_logout' %}" class="text-sm font-semibold text-textSecondary hover:text-primaryBlue">Déconnexion</a>
