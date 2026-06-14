@@ -8,7 +8,7 @@ import json
 
 import firebase_admin
 from firebase_admin import auth as fb_auth
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, messaging
 from django.conf import settings
 
 _app = None
@@ -54,6 +54,56 @@ def get_entitlement(uid: str):
     _ensure_init()
     doc = _db.collection('subscriptions').document(uid).get()
     return doc.to_dict() if doc.exists else None
+
+
+def db():
+    """Client Firestore initialisé (pour les tâches d'envoi de notifications)."""
+    _ensure_init()
+    return _db
+
+
+def tokens_for_uid(uid: str):
+    """Jetons FCM enregistrés pour un utilisateur (collection fcm_tokens)."""
+    _ensure_init()
+    docs = _db.collection('fcm_tokens').where('userId', '==', uid).stream()
+    return [d.id for d in docs]
+
+
+def notif_settings(uid: str):
+    """Réglages de notifications de l'utilisateur (users/{uid}/settings/notifications).
+    Renvoie un dict ; par défaut les alertes critiques sont actives."""
+    _ensure_init()
+    doc = (_db.collection('users').document(uid)
+           .collection('settings').document('notifications').get())
+    data = doc.to_dict() if doc.exists else {}
+    return {
+        'notif_critical_stock': data.get('notif_critical_stock', True),
+        'notif_new_sale': data.get('notif_new_sale', True),
+        'notif_daily_summary': data.get('notif_daily_summary', False),
+    }
+
+
+def send_push(tokens, title: str, body: str, data: dict | None = None):
+    """Envoie une notification à une liste de jetons (multicast). Retourne le
+    nombre d'envois réussis. Nettoie les jetons devenus invalides."""
+    _ensure_init()
+    tokens = [t for t in tokens if t]
+    if not tokens:
+        return 0
+    message = messaging.MulticastMessage(
+        tokens=tokens,
+        notification=messaging.Notification(title=title, body=body),
+        data={k: str(v) for k, v in (data or {}).items()},
+    )
+    resp = messaging.send_each_for_multicast(message)
+    # Supprime les jetons rejetés (désinstallation, expiration).
+    for tok, r in zip(tokens, resp.responses):
+        if not r.success:
+            try:
+                _db.collection('fcm_tokens').document(tok).delete()
+            except Exception:
+                pass
+    return resp.success_count
 
 
 def set_app_config(*, latest_build: int, min_build: int, message: str, store_url: str):
