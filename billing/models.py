@@ -106,6 +106,29 @@ class AppConfig(models.Model):
         return f"App build {self.latest_build} (min requis {self.min_build})"
 
 
+class CrashReport(models.Model):
+    """Rapport de crash/erreur remonté par l'app mobile (en plus de Crashlytics),
+    consultable par l'admin dans Jazzmin."""
+    uid = models.CharField(max_length=128, blank=True, db_index=True)
+    email = models.EmailField(blank=True)
+    platform = models.CharField(max_length=20, blank=True)       # android | ios | …
+    app_version = models.CharField(max_length=40, blank=True)    # ex : 1.1.3
+    build_number = models.CharField(max_length=20, blank=True)   # ex : 8
+    fatal = models.BooleanField(default=False)
+    error = models.TextField()
+    stack = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Crash / erreur'
+        verbose_name_plural = 'Crashs / erreurs'
+
+    def __str__(self):
+        head = (self.error or '').splitlines()[0] if self.error else 'crash'
+        return f'[{self.platform} {self.app_version}] {head[:60]}'
+
+
 class Commission(models.Model):
     STATUS_CHOICES = [('pending', 'À verser'), ('paid', 'Versée')]
     referral = models.ForeignKey(Referral, on_delete=models.CASCADE, related_name='commissions')

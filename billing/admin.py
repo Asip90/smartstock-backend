@@ -1,8 +1,27 @@
 from django.contrib import admin, messages
 from django.utils import timezone
 from .models import (PromoCode, Referral, Transaction, Commission,
-                     WithdrawalRequest, AppConfig)
+                     WithdrawalRequest, AppConfig, CrashReport)
 from . import firebase_service as fb
+
+
+@admin.register(CrashReport)
+class CrashReportAdmin(admin.ModelAdmin):
+    """Crashs/erreurs remontés par l'app mobile (consultation seule)."""
+    list_display = ('created_at', 'platform', 'app_version', 'build_number',
+                    'fatal', 'short_error', 'email')
+    list_filter = ('fatal', 'platform', 'app_version')
+    search_fields = ('uid', 'email', 'error', 'stack')
+    readonly_fields = ('uid', 'email', 'platform', 'app_version', 'build_number',
+                       'fatal', 'error', 'stack', 'created_at')
+    date_hierarchy = 'created_at'
+
+    @admin.display(description='Erreur')
+    def short_error(self, obj):
+        return (obj.error or '').splitlines()[0][:80] if obj.error else ''
+
+    def has_add_permission(self, request):
+        return False  # alimenté uniquement par l'app via l'API
 
 
 @admin.register(AppConfig)

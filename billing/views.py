@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from . import firebase_service as fb
 from . import fedapay
-from .models import PromoCode, Referral, Transaction, Commission
+from .models import PromoCode, Referral, Transaction, Commission, CrashReport
 
 
 def _auth(request):
@@ -163,3 +163,28 @@ def me(request):
     if not uid:
         return JsonResponse({'error': 'unauthorized'}, status=401)
     return JsonResponse({'entitlement': fb.get_entitlement(uid) or {'plan': 'free'}})
+
+
+@csrf_exempt
+def crash(request):
+    """Reçoit un rapport de crash de l'app et l'enregistre (visible dans Jazzmin).
+    L'auth est facultative : un crash peut survenir hors session. On borne la
+    taille des champs texte pour éviter des charges abusives."""
+    if request.method != 'POST':
+        return HttpResponseBadRequest('POST requis')
+    uid, email = _auth(request)  # (None, None) si non authentifié
+    data = _body(request)
+    error = (data.get('error') or '').strip()
+    if not error:
+        return JsonResponse({'error': 'error_requis'}, status=400)
+    CrashReport.objects.create(
+        uid=uid or '',
+        email=email or data.get('email', '') or '',
+        platform=str(data.get('platform', ''))[:20],
+        app_version=str(data.get('app_version', ''))[:40],
+        build_number=str(data.get('build_number', ''))[:20],
+        fatal=bool(data.get('fatal', False)),
+        error=error[:5000],
+        stack=(data.get('stack') or '')[:20000],
+    )
+    return JsonResponse({'status': 'ok'})
