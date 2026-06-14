@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
     <title>{% block title %}SmartStock | Gestion de stock & ventes pour commerçants{% endblock %}</title>
-    <meta name="description" content="SmartStock : gérez vos produits, ventes, réapprovisionnements et bénéfices depuis votre téléphone. Hors-ligne, reçus PDF, assistant vocal. Made in Benin.">
+    <meta name="description" content="SmartStock : gérez vos produits, ventes, réapprovisionnements et bénéfices depuis votre téléphone. Hors-ligne, reçus PDF, assistant vocal.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,48 +18,57 @@
             theme: {
                 extend: {
                     colors: {
+                        /* Brand palette — synced with the Flutter app (lib/pages/theme.dart) */
                         primaryBlue: '#1A56DB',
+                        primaryBlueDark: '#1648B8',
                         accentCyan: '#06B6D4',
-                        deepNavy: '#1E3A5F',
-                        surface: '#F1F5F9',
+                        deepNavy: '#1E3A5F',   /* headings / text-primary */
+                        bodyText: '#475569',   /* slate-600 — body copy */
+                        surface: '#F1F5F9',    /* slate-100 — page background */
+                        surfaceAlt: '#F8FAFC', /* slate-50 — alt sections */
                         successGreen: '#16A34A',
                         errorRed: '#DC2626',
                         warningAmber: '#F59E0B',
-                        textSecondary: '#64748B',
-                        borderColor: '#E2E8F0',
+                        textSecondary: '#64748B', /* slate-500 */
+                        borderColor: '#E2E8F0',   /* slate-200 */
                         darkBg: '#0F172A',
                         darkSurface: '#1E293B',
                         darkCard: '#243447',
                     },
                     borderRadius: { 'input': '12px', 'card': '16px', 'sheet': '24px' },
-                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
-                    letterSpacing: { tightest: '-0.5px', tighter: '-0.3px' }
+                    fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] },
+                    letterSpacing: { tightest: '-0.5px', tighter: '-0.3px' },
+                    boxShadow: {
+                        soft: '0 1px 2px rgba(30,58,95,0.04), 0 4px 16px rgba(30,58,95,0.06)',
+                        lift: '0 4px 12px rgba(30,58,95,0.06), 0 18px 40px rgba(30,58,95,0.10)',
+                        glow: '0 8px 24px rgba(26,86,219,0.25)',
+                    }
                 }
             }
         }
     </script>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-white text-deepNavy selection:bg-primaryBlue selection:text-white">
+<body class="bg-surface text-bodyText antialiased selection:bg-primaryBlue selection:text-white">
 
     <!-- NAVBAR -->
     <nav id="navbar" class="fixed top-0 w-full h-16 z-50 transition-all duration-300 bg-transparent">
         <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-            <a href="/" class="flex items-center gap-3 group">
-                <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-9 h-9 rounded-lg object-cover group-hover:scale-110 transition-transform">
-                <span class="font-extrabold text-xl tracking-tighter text-deepNavy">SmartStock</span>
+            <a href="/" class="flex items-center gap-2.5">
+                <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-8 h-8 rounded-lg object-cover">
+                <span class="text-xl tracking-tighter"><span class="font-extrabold text-deepNavy">Smart</span><span class="font-semibold text-textSecondary">Stock</span></span>
             </a>
 
             <div class="hidden md:flex items-center gap-8">
-                <a href="#features" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Fonctionnalités</a>
-                <a href="#benefits" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Avantages</a>
-                <a href="#pricing" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Tarifs</a>
-                <a href="#promoteur" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Promoteur</a>
-                <a href="/promoteur/connexion" class="text-sm font-medium text-textSecondary hover:text-primaryBlue transition-colors">Espace promoteur</a>
+                <a href="#features" class="text-sm font-medium text-textSecondary hover:text-deepNavy transition-colors">Fonctionnalités</a>
+                <a href="#benefits" class="text-sm font-medium text-textSecondary hover:text-deepNavy transition-colors">Avantages</a>
+                <a href="#pricing" class="text-sm font-medium text-textSecondary hover:text-deepNavy transition-colors">Tarifs</a>
+                <a href="#promoteur" class="text-sm font-medium text-textSecondary hover:text-deepNavy transition-colors">Affiliation</a>
+                <a href="#faq" class="text-sm font-medium text-textSecondary hover:text-deepNavy transition-colors">FAQ</a>
             </div>
 
             <div class="flex items-center gap-4">
-                <a href="{{ download_url }}" class="hidden sm:inline-block bg-primaryBlue text-white px-5 py-2.5 rounded-input text-sm font-bold hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primaryBlue/20">
+                <a href="{{ download_url }}" class="hidden sm:inline-flex items-center gap-2 bg-primaryBlue text-white px-5 py-2.5 rounded-input text-sm font-semibold hover:bg-primaryBlueDark transition-colors">
                     Télécharger
                 </a>
                 <button id="mobileMenuBtn" class="md:hidden p-2 -mr-2 text-deepNavy" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobileMenu">
@@ -71,9 +81,9 @@
     <!-- MENU MOBILE -->
     <div id="mobileMenu" class="fixed inset-0 z-[60] bg-white flex-col hidden">
         <div class="h-16 px-6 flex items-center justify-between border-b border-borderColor">
-            <a href="/" class="flex items-center gap-3">
-                <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-9 h-9 rounded-lg object-cover">
-                <span class="font-extrabold text-xl tracking-tighter text-deepNavy">SmartStock</span>
+            <a href="/" class="flex items-center gap-2.5">
+                <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-8 h-8 rounded-lg object-cover">
+                <span class="text-xl tracking-tighter"><span class="font-extrabold text-deepNavy">Smart</span><span class="font-semibold text-textSecondary">Stock</span></span>
             </a>
             <button id="mobileMenuClose" class="p-2 -mr-2 text-deepNavy" aria-label="Fermer le menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -83,7 +93,8 @@
             <a href="#features" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Fonctionnalités</a>
             <a href="#benefits" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Avantages</a>
             <a href="#pricing" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Tarifs</a>
-            <a href="#promoteur" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Devenir promoteur</a>
+            <a href="#promoteur" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Affiliation</a>
+            <a href="#faq" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">FAQ</a>
             <a href="/promoteur/connexion" class="mobile-link py-3 text-lg font-semibold text-deepNavy border-b border-borderColor">Espace promoteur</a>
             <a href="{{ download_url }}" class="mobile-link mt-4 bg-primaryBlue text-white text-center py-4 rounded-input font-bold">Télécharger l'app</a>
         </nav>
@@ -94,46 +105,46 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-darkBg py-20 border-t border-gray-800">
+    <footer class="bg-gradient-to-b from-[#16304E] to-[#0D1F36] py-20">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-2 md:grid-cols-5 gap-12">
                 <div class="col-span-2">
-                    <a href="/" class="flex items-center gap-3 mb-6">
-                        <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-9 h-9 rounded-lg object-cover">
+                    <a href="/" class="flex items-center gap-2.5 mb-6">
+                        <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-8 h-8 rounded-lg object-cover">
                         <span class="font-extrabold text-xl tracking-tighter text-white">SmartStock</span>
                     </a>
-                    <p class="text-gray-400 text-sm max-w-xs mb-6">
+                    <p class="text-white/60 text-sm max-w-xs mb-6 leading-relaxed">
                         La gestion de boutique simple et puissante, pensée pour les commerçants africains.
                     </p>
                 </div>
                 <div>
                     <h4 class="text-white font-bold mb-6 text-sm">Produit</h4>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li><a href="#features" class="hover:text-primaryBlue transition-colors">Fonctionnalités</a></li>
-                        <li><a href="#pricing" class="hover:text-primaryBlue transition-colors">Tarifs</a></li>
-                        <li><a href="{{ download_url }}" class="hover:text-primaryBlue transition-colors">Télécharger</a></li>
-                        <li><a href="/promoteur/connexion" class="hover:text-primaryBlue transition-colors">Espace promoteur</a></li>
+                    <ul class="space-y-4 text-sm text-white/60">
+                        <li><a href="#features" class="hover:text-white transition-colors">Fonctionnalités</a></li>
+                        <li><a href="#pricing" class="hover:text-white transition-colors">Tarifs</a></li>
+                        <li><a href="{{ download_url }}" class="hover:text-white transition-colors">Télécharger</a></li>
+                        <li><a href="/promoteur/connexion" class="hover:text-white transition-colors">Espace promoteur</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-white font-bold mb-6 text-sm">Légal</h4>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li><a href="/confidentialite" class="hover:text-primaryBlue transition-colors">Confidentialité</a></li>
-                        <li><a href="/conditions" class="hover:text-primaryBlue transition-colors">Conditions d'utilisation</a></li>
-                        <li><a href="/mentions-legales" class="hover:text-primaryBlue transition-colors">Mentions légales</a></li>
+                    <ul class="space-y-4 text-sm text-white/60">
+                        <li><a href="/confidentialite" class="hover:text-white transition-colors">Confidentialité</a></li>
+                        <li><a href="/conditions" class="hover:text-white transition-colors">Conditions d'utilisation</a></li>
+                        <li><a href="/mentions-legales" class="hover:text-white transition-colors">Mentions légales</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-white font-bold mb-6 text-sm">Contact</h4>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li><a href="https://wa.me/2290190637730" class="hover:text-primaryBlue transition-colors">WhatsApp</a></li>
-                        <li><a href="mailto:support@smartstock.app" class="hover:text-primaryBlue transition-colors">support@smartstock.app</a></li>
+                    <ul class="space-y-4 text-sm text-white/60">
+                        <li><a href="https://wa.me/2290190637730" class="hover:text-white transition-colors">WhatsApp</a></li>
+                        <li><a href="mailto:support@smartstock.app" class="hover:text-white transition-colors">support@smartstock.app</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="mt-20 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-xs text-gray-500">© 2026 SmartStock. Tous droits réservés.</p>
-                <p class="text-xs text-gray-500">Made in Benin 🇧🇯</p>
+            <div class="mt-20 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-white/40">© 2026 SmartStock. Tous droits réservés.</p>
+                <p class="text-xs text-white/40">La gestion de boutique, simplifiée.</p>
             </div>
         </div>
     </footer>

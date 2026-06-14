@@ -99,8 +99,8 @@ FEDAPAY_ENV = os.environ.get('FEDAPAY_ENV', 'sandbox')
 FEDAPAY_WEBHOOK_SECRET = os.environ.get('FEDAPAY_WEBHOOK_SECRET', '')
 FIREBASE_SERVICE_ACCOUNT_JSON = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON', '')
 
-PRICE_MONTHLY = int(os.environ.get('PRICE_MONTHLY', '1900'))
-PRICE_YEARLY = int(os.environ.get('PRICE_YEARLY', '15000'))
+PRICE_MONTHLY = int(os.environ.get('PRICE_MONTHLY', '900'))
+PRICE_YEARLY = int(os.environ.get('PRICE_YEARLY', '9000'))
 
 # Lien de téléchargement de l'app. Par défaut : APK servi par le backend
 # (/telecharger). Surchargeable via l'env (ex. lien Play Store plus tard).

@@ -1,9 +1,41 @@
+/* Immersive hero background — subtle brand grid, faded toward edges */
+.hero-grid {
+    background-image:
+        linear-gradient(to right, rgba(30, 58, 95, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 58, 95, 0.06) 1px, transparent 1px);
+    background-size: 54px 54px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 45%, transparent 100%);
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 45%, transparent 100%);
+}
+
+/* Crisp typography rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
 /* Custom Reveal Animations */
 .reveal-on-scroll, .animate-reveal {
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* Slow drifting aurora glows (hero background) */
+@keyframes drift {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50%      { transform: translate3d(24px, -28px, 0) scale(1.08); }
+}
+.aurora   { animation: drift 20s ease-in-out infinite; }
+.aurora-2 { animation: drift 26s ease-in-out infinite reverse; }
+
+/* Gentle float (hero device mockup) */
+@keyframes floatY {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+}
+.float-slow { animation: floatY 6.5s ease-in-out infinite; }
 
 .reveal-active {
     opacity: 1 !important;
@@ -30,6 +62,18 @@
 ::selection {
     background-color: #1A56DB;
     color: white;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .reveal-on-scroll, .animate-reveal {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
+    }
+    .aurora, .aurora-2, .float-slow { animation: none !important; }
+    html { scroll-behavior: auto; }
 }
 
 /* Smooth Scrolling */

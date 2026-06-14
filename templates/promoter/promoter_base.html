@@ -1,17 +1,30 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
   <title>{% block title %}Espace promoteur | SmartStock{% endblock %}</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = { theme: { extend: {
-      colors: { primaryBlue:'#1A56DB', deepNavy:'#1E3A5F', surface:'#F1F5F9', successGreen:'#16A34A', errorRed:'#DC2626', textSecondary:'#64748B', borderColor:'#E2E8F0' },
-      borderRadius: { input:'12px', card:'16px' },
-      fontFamily: { sans:['Poppins','sans-serif'] } } } }
+      colors: {
+        primaryBlue:'#1A56DB', primaryBlueDark:'#1648B8', accentCyan:'#06B6D4',
+        deepNavy:'#1E3A5F', bodyText:'#475569', surface:'#F1F5F9', surfaceAlt:'#F8FAFC',
+        successGreen:'#16A34A', errorRed:'#DC2626', warningAmber:'#F59E0B',
+        textSecondary:'#64748B', borderColor:'#E2E8F0'
+      },
+      borderRadius: { input:'12px', card:'16px', sheet:'24px' },
+      fontFamily: { sans:['Poppins','system-ui','sans-serif'] },
+      letterSpacing: { tightest:'-0.5px', tighter:'-0.3px' },
+      boxShadow: {
+        soft:'0 1px 2px rgba(30,58,95,0.04), 0 4px 16px rgba(30,58,95,0.06)',
+        lift:'0 4px 12px rgba(30,58,95,0.06), 0 18px 40px rgba(30,58,95,0.10)',
+        glow:'0 8px 24px rgba(26,86,219,0.25)'
+      }
+    } } }
   </script>
   <style>
     @keyframes pop-in { 0%{opacity:0;transform:scale(.85)} 60%{transform:scale(1.04)} 100%{opacity:1;transform:scale(1)} }
@@ -22,10 +35,80 @@
     .motion-rise.d1 { animation-delay:.12s } .motion-rise.d2 { animation-delay:.24s } .motion-rise.d3 { animation-delay:.36s }
     .check-circle { width:88px;height:88px;border-radius:50%;background:#16A34A;display:flex;align-items:center;justify-content:center;margin:0 auto }
     .check-circle svg path { stroke-dasharray:48;stroke-dashoffset:48;animation:draw .5s ease .3s forwards }
+    body { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale }
   </style>
   {% block extra_head %}{% endblock %}
 </head>
-<body class="font-sans bg-surface text-deepNavy min-h-screen flex items-center justify-center px-6 py-12">
-  {% block body %}{% endblock %}
+<body class="font-sans bg-surface text-deepNavy min-h-screen flex flex-col">
+
+  <!-- NAVBAR (cohérente avec le site) -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-borderColor">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5">
+        <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-8 h-8 rounded-lg object-cover">
+        <span class="text-xl tracking-tighter"><span class="font-extrabold text-deepNavy">Smart</span><span class="font-semibold text-textSecondary">Stock</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="/#features" class="text-sm font-medium text-textSecondary hover:text-deepNavy transition-colors">Fonctionnalités</a>
+        <a href="/#pricing" class="text-sm font-medium text-textSecondary hover:text-deepNavy transition-colors">Tarifs</a>
+        <a href="/#promoteur" class="text-sm font-medium text-textSecondary hover:text-deepNavy transition-colors">Affiliation</a>
+        <a href="/#faq" class="text-sm font-medium text-textSecondary hover:text-deepNavy transition-colors">FAQ</a>
+      </div>
+      <a href="{% url 'download_apk' %}" class="inline-flex items-center gap-2 bg-primaryBlue text-white px-5 py-2.5 rounded-input text-sm font-semibold hover:bg-primaryBlueDark transition-colors">
+        Télécharger
+      </a>
+    </div>
+  </header>
+
+  <!-- CONTENU -->
+  <main class="flex-1 flex items-center justify-center px-6 py-12 md:py-16">
+    {% block body %}{% endblock %}
+  </main>
+
+  <!-- FOOTER (cohérent avec le site) -->
+  <footer class="bg-gradient-to-b from-[#16304E] to-[#0D1F36] py-16">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-10 md:gap-12">
+        <div class="col-span-2">
+          <a href="/" class="flex items-center gap-2.5 mb-5">
+            <img src="{% static 'landing/img/logo.png' %}" alt="SmartStock" class="w-8 h-8 rounded-lg object-cover">
+            <span class="font-extrabold text-xl tracking-tighter text-white">SmartStock</span>
+          </a>
+          <p class="text-white/60 text-sm max-w-xs leading-relaxed">
+            La gestion de boutique simple et puissante, pensée pour les commerçants africains.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold mb-5 text-sm">Produit</h4>
+          <ul class="space-y-3.5 text-sm text-white/60">
+            <li><a href="/#features" class="hover:text-white transition-colors">Fonctionnalités</a></li>
+            <li><a href="/#pricing" class="hover:text-white transition-colors">Tarifs</a></li>
+            <li><a href="{% url 'download_apk' %}" class="hover:text-white transition-colors">Télécharger</a></li>
+            <li><a href="{% url 'promoter_login' %}" class="hover:text-white transition-colors">Espace promoteur</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold mb-5 text-sm">Légal</h4>
+          <ul class="space-y-3.5 text-sm text-white/60">
+            <li><a href="/confidentialite" class="hover:text-white transition-colors">Confidentialité</a></li>
+            <li><a href="/conditions" class="hover:text-white transition-colors">Conditions d'utilisation</a></li>
+            <li><a href="/mentions-legales" class="hover:text-white transition-colors">Mentions légales</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold mb-5 text-sm">Contact</h4>
+          <ul class="space-y-3.5 text-sm text-white/60">
+            <li><a href="https://wa.me/2290190637730" class="hover:text-white transition-colors">WhatsApp</a></li>
+            <li><a href="mailto:support@smartstock.app" class="hover:text-white transition-colors">support@smartstock.app</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-white/40">© 2026 SmartStock. Tous droits réservés.</p>
+        <p class="text-xs text-white/40">La gestion de boutique, simplifiée.</p>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>

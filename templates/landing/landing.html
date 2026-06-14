@@ -2,249 +2,355 @@
 {% load static %}
 
 {% block content %}
-<!-- HERO -->
-<section class="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-white dark:bg-darkBg">
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-12 items-center">
-        <div class="md:col-span-7 space-y-8 animate-reveal">
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface dark:bg-darkSurface rounded-full border border-borderColor dark:border-gray-700">
-                <span class="text-[11px] font-bold text-primaryBlue uppercase tracking-wider">Made in Benin 🇧🇯</span>
+<!-- ════════════ 1. HERO ════════════ -->
+<section class="relative overflow-hidden bg-white pt-28 pb-16 md:pt-32 md:pb-24 lg:min-h-[90vh] lg:flex lg:items-center">
+    <!-- Couches de fond immersives -->
+    <div class="absolute inset-0 hero-grid pointer-events-none"></div>
+    <div class="aurora absolute -top-40 -right-24 w-[42rem] h-[42rem] bg-primaryBlue/10 blur-[130px] rounded-full pointer-events-none"></div>
+    <div class="aurora-2 absolute top-32 -left-32 w-[34rem] h-[34rem] bg-accentCyan/10 blur-[130px] rounded-full pointer-events-none"></div>
+
+    <div class="relative w-full max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div class="lg:col-span-7 space-y-7 animate-reveal">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface rounded-full border border-borderColor">
+                <span class="relative flex h-1.5 w-1.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-successGreen opacity-75"></span><span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-successGreen"></span></span>
+                <span class="text-xs font-semibold text-textSecondary">Pensé pour les commerçants indépendants</span>
             </div>
-            <h1 class="text-4xl md:text-6xl font-extrabold text-deepNavy dark:text-white leading-[1.1] tracking-tightest">
+            <h1 class="text-[2.6rem] md:text-6xl lg:text-[4.25rem] font-extrabold text-deepNavy leading-[1.05] tracking-tightest">
                 Gérez votre boutique,<br>
                 <span class="text-primaryBlue">pas vos cahiers</span>
             </h1>
-            <p class="text-lg text-textSecondary dark:text-gray-400 max-w-lg leading-relaxed">
-                SmartStock vous permet de suivre vos produits, enregistrer vos ventes, gérer votre stock et connaître vos bénéfices — directement depuis votre téléphone, même sans connexion.
+            <p class="text-lg md:text-xl text-bodyText max-w-xl leading-relaxed">
+                Suivez votre stock, vos ventes et vos bénéfices depuis votre téléphone — même sans connexion. Plus besoin de cahiers ni de calculatrice.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                <a href="{{ download_url }}" class="bg-primaryBlue text-white px-8 py-4 rounded-input font-bold text-center hover:brightness-110 transition-all shadow-xl shadow-primaryBlue/25">
+            <div class="flex flex-col sm:flex-row gap-3 pt-1">
+                <a href="{{ download_url }}" class="inline-flex items-center justify-center gap-2 bg-primaryBlue text-white px-7 py-4 rounded-input font-semibold text-base hover:bg-primaryBlueDark active:scale-[0.99] transition-all shadow-glow">
                     Télécharger l'app
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                 </a>
-                <a href="#pricing" class="border border-borderColor dark:border-gray-700 text-deepNavy dark:text-white px-8 py-4 rounded-input font-bold text-center hover:bg-surface dark:hover:bg-darkSurface transition-all">
+                <a href="#pricing" class="inline-flex items-center justify-center border border-borderColor bg-white text-deepNavy px-7 py-4 rounded-input font-semibold text-base hover:bg-surface transition-colors">
                     Voir les tarifs
                 </a>
             </div>
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 pt-6 text-xs text-textSecondary font-medium">
-                <span class="flex items-center gap-2">✓ 1 mois d'essai gratuit</span>
-                <span class="text-gray-300 dark:text-gray-700">·</span>
-                <span class="flex items-center gap-2">✓ Fonctionne hors-ligne</span>
-                <span class="text-gray-300 dark:text-gray-700">·</span>
-                <span class="flex items-center gap-2">✓ Sans engagement</span>
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 text-sm text-textSecondary font-medium">
+                <span class="inline-flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-successGreen shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    1 mois d'essai gratuit
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-successGreen shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    Sans carte bancaire
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-successGreen shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    Fonctionne hors-ligne
+                </span>
             </div>
         </div>
 
-        <div class="md:col-span-5 relative animate-reveal [animation-delay:200ms]">
-            <div class="relative mx-auto w-full max-w-[280px]">
-                <div class="relative bg-gray-900 rounded-[3rem] p-3 shadow-2xl border-[8px] border-gray-800">
-                    <div class="bg-white rounded-[2.5rem] overflow-hidden aspect-[9/19.5]">
-                        <img src="{% static 'landing/img/app-dashboard.png' %}" alt="Tableau de bord SmartStock" class="w-full h-full object-cover">
+        <div class="lg:col-span-5 relative animate-reveal [animation-delay:150ms]">
+            <div class="float-slow relative mx-auto w-full max-w-[225px]">
+                <div class="rounded-[2rem] border border-borderColor bg-white p-1.5 shadow-lift">
+                    <div class="rounded-[1.7rem] overflow-hidden bg-white aspect-[9/19.5]">
+                        <img src="{% static 'landing/img/app-dashboard.png' %}" alt="Tableau de bord SmartStock sur mobile" class="w-full h-full object-cover">
                     </div>
                 </div>
-                <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-4 bg-primaryBlue/10 blur-2xl rounded-full"></div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- AVANTAGES -->
-<section id="benefits" class="bg-surface dark:bg-darkSurface py-16 border-y border-borderColor dark:border-gray-800">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-borderColor dark:divide-gray-800">
-            <div class="py-8 lg:py-0 lg:px-8 text-center lg:text-left">
-                <div class="text-2xl font-extrabold text-primaryBlue tracking-tightest mb-1">Hors-ligne</div>
-                <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest">Vendez sans connexion</div>
+<!-- ════════════ 2. PREUVE / RÉASSURANCE ════════════ -->
+<section class="relative z-10 bg-white border-y border-borderColor">
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-6 items-center text-center md:text-left">
+            <div class="flex items-center gap-3 justify-center md:justify-start">
+                <svg class="w-6 h-6 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636a9 9 0 010 12.728M5.636 18.364a9 9 0 010-12.728m12.728 0L5.636 18.364"/></svg>
+                <span class="text-sm font-semibold text-deepNavy">100% hors-ligne</span>
             </div>
-            <div class="py-8 lg:py-0 lg:px-8 text-center lg:text-left">
-                <div class="text-2xl font-extrabold text-primaryBlue tracking-tightest mb-1">Reçus PDF</div>
-                <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest">À votre image</div>
+            <div class="flex items-center gap-3 justify-center md:justify-start">
+                <svg class="w-6 h-6 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span class="text-sm font-semibold text-deepNavy">Reçus PDF à votre nom</span>
             </div>
-            <div class="py-8 lg:py-0 lg:px-8 text-center lg:text-left">
-                <div class="text-2xl font-extrabold text-primaryBlue tracking-tightest mb-1">Bénéfice</div>
-                <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest">Calculé en temps réel</div>
+            <div class="flex items-center gap-3 justify-center md:justify-start">
+                <svg class="w-6 h-6 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+                <span class="text-sm font-semibold text-deepNavy">Bénéfices en temps réel</span>
             </div>
-            <div class="py-8 lg:py-0 lg:px-8 text-center lg:text-left">
-                <div class="text-2xl font-extrabold text-primaryBlue tracking-tightest mb-1">Vocal</div>
-                <div class="text-[11px] font-bold text-textSecondary uppercase tracking-widest">Vendez à la voix</div>
+            <div class="flex items-center gap-3 justify-center md:justify-start">
+                <svg class="w-6 h-6 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="text-sm font-semibold text-deepNavy">Sans carte bancaire</span>
             </div>
         </div>
     </div>
 </section>
 
-<!-- FONCTIONNALITÉS (zigzag) -->
-<section id="features" class="py-24 space-y-32 bg-white dark:bg-darkBg">
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center reveal-on-scroll">
-        <div class="order-2 md:order-1 relative">
-            <div class="aspect-square bg-surface rounded-card border border-borderColor overflow-hidden">
-                <img src="{% static 'landing/img/app-articles.png' %}" alt="Liste des articles SmartStock" class="w-full h-full object-cover">
+<!-- ════════════ 3. PROBLÈME → AGITATION → SOLUTION ════════════ -->
+<section class="py-20 md:py-28 bg-surfaceAlt">
+    <div class="max-w-3xl mx-auto px-6 text-center mb-14 reveal-on-scroll">
+        <span class="text-sm font-semibold text-primaryBlue uppercase tracking-wider">Le quotidien d'un commerçant</span>
+        <h2 class="mt-3 text-3xl md:text-[2.5rem] font-extrabold text-deepNavy tracking-tightest leading-[1.1]">Le cahier ne suit plus le rythme</h2>
+    </div>
+    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-5 reveal-on-scroll">
+        <!-- Problème -->
+        <div class="bg-white rounded-card border border-borderColor p-7 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift hover:border-primaryBlue/40">
+            <div class="w-11 h-11 rounded-input bg-surface flex items-center justify-center mb-5">
+                <svg class="w-6 h-6 text-textSecondary" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
             </div>
+            <h3 class="text-lg font-semibold text-deepNavy mb-2">Tout est noté à la main</h3>
+            <p class="text-sm text-bodyText leading-relaxed">Stock sur un cahier, ventes sur un autre, bénéfices à la calculatrice. C'est long, et une erreur est vite arrivée.</p>
         </div>
-        <div class="order-1 md:order-2 space-y-6">
-            <span class="text-5xl font-extrabold text-gray-200 dark:text-gray-800 leading-none">01</span>
-            <h3 class="text-2xl font-bold text-deepNavy dark:text-white tracking-tighter">Vendez en quelques secondes</h3>
-            <p class="text-sm text-textSecondary dark:text-gray-400 leading-relaxed max-w-md">
-                Recherchez un article, ajoutez-le au panier, ajustez la quantité et validez. Un reçu PDF professionnel (avec votre nom, RCCM, IFU) est généré instantanément.
-            </p>
-            <ul class="space-y-3 pt-2">
-                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Recherche instantanée & filtre par catégorie</li>
-                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Reçu PDF à imprimer ou partager</li>
-                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Stock mis à jour automatiquement</li>
-            </ul>
+        <!-- Agitation -->
+        <div class="bg-white rounded-card border border-borderColor p-7 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift hover:border-primaryBlue/40">
+            <div class="w-11 h-11 rounded-input bg-errorRed/10 flex items-center justify-center mb-5">
+                <svg class="w-6 h-6 text-errorRed" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-deepNavy mb-2">Et chaque erreur se paie</h3>
+            <p class="text-sm text-bodyText leading-relaxed">Une rupture découverte trop tard, c'est une vente perdue. Une marge mal calculée, c'est de l'argent qui s'envole sans qu'on le voie.</p>
+        </div>
+        <!-- Solution -->
+        <div class="bg-white rounded-card border-2 border-primaryBlue p-7 shadow-soft relative transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift">
+            <span class="absolute -top-3 left-7 text-[10px] bg-primaryBlue text-white px-3 py-1 rounded-full uppercase font-bold tracking-wider">La solution</span>
+            <div class="w-11 h-11 rounded-input bg-primaryBlue/10 flex items-center justify-center mb-5">
+                <svg class="w-6 h-6 text-primaryBlue" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-deepNavy mb-2">SmartStock fait le calcul</h3>
+            <p class="text-sm text-bodyText leading-relaxed">Enregistrez une vente en quelques secondes : stock et bénéfices se mettent à jour tout seuls. Hors-ligne, depuis votre téléphone.</p>
         </div>
     </div>
+</section>
 
-    <div class="max-w-7xl mx-auto px-6 h-px bg-borderColor dark:bg-gray-800"></div>
+<!-- ════════════ 4. BÉNÉFICES (alterné) ════════════ -->
+<section id="features" class="py-20 md:py-28 bg-white">
+    <div class="max-w-3xl mx-auto px-6 text-center mb-16 md:mb-20 reveal-on-scroll">
+        <span class="text-sm font-semibold text-primaryBlue uppercase tracking-wider">Fonctionnalités</span>
+        <h2 class="mt-3 text-3xl md:text-[2.5rem] font-extrabold text-deepNavy tracking-tightest leading-[1.1]">Moins de gestion, plus de ventes</h2>
+        <p class="mt-4 text-lg text-bodyText leading-relaxed">Chaque fonction vous fait gagner du temps ou de l'argent. Concrètement.</p>
+    </div>
 
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center reveal-on-scroll">
-        <div class="space-y-6">
-            <span class="text-5xl font-extrabold text-gray-200 dark:text-gray-800 leading-none">02</span>
-            <h3 class="text-2xl font-bold text-deepNavy dark:text-white tracking-tighter">Vos bénéfices, en clair</h3>
-            <p class="text-sm text-textSecondary dark:text-gray-400 leading-relaxed max-w-md">
-                Renseignez le prix de revient de vos produits et SmartStock calcule automatiquement votre bénéfice et votre marge — du jour comme de la période.
-            </p>
-            <div class="flex gap-4">
-                <div class="p-4 bg-surface dark:bg-darkSurface rounded-xl border border-borderColor dark:border-gray-800 flex-1">
-                    <div class="text-lg font-bold text-successGreen">Bénéfice</div>
-                    <div class="text-[10px] text-textSecondary uppercase font-bold tracking-widest">Du jour & par période</div>
+    <div id="benefits" class="max-w-6xl mx-auto px-6 space-y-20 md:space-y-28">
+        <!-- 01 -->
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center reveal-on-scroll">
+            <div class="order-2 md:order-1">
+                <div class="mx-auto w-full max-w-[208px] rounded-[2rem] border border-borderColor bg-white p-1.5 shadow-soft transition-all duration-500 hover:-translate-y-2 hover:shadow-lift">
+                    <div class="rounded-[1.7rem] overflow-hidden bg-white aspect-[9/19.5]">
+                        <img src="{% static 'landing/img/app-ventes.png' %}" alt="Écran de vente SmartStock" class="w-full h-full object-cover">
+                    </div>
                 </div>
-                <div class="p-4 bg-surface dark:bg-darkSurface rounded-xl border border-borderColor dark:border-gray-800 flex-1">
-                    <div class="text-lg font-bold text-primaryBlue">Stock</div>
-                    <div class="text-[10px] text-textSecondary uppercase font-bold tracking-widest">Alertes stock critique</div>
+            </div>
+            <div class="order-1 md:order-2 space-y-5">
+                <div class="w-12 h-12 rounded-card bg-primaryBlue/10 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-primaryBlue" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
                 </div>
-            </div>
-        </div>
-        <div class="relative">
-            <div class="aspect-square bg-surface rounded-card border border-borderColor overflow-hidden">
-                <img src="{% static 'landing/img/app-ventes.png' %}" alt="Écran de vente SmartStock" class="w-full h-full object-cover">
-            </div>
-        </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-6 h-px bg-borderColor dark:bg-gray-800"></div>
-
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center reveal-on-scroll">
-        <div class="order-2 md:order-1 relative">
-            <div class="aspect-square bg-surface rounded-card border border-borderColor overflow-hidden">
-                <img src="{% static 'landing/img/app-voix.png' %}" alt="Assistant vocal SmartStock" class="w-full h-full object-cover">
-            </div>
-        </div>
-        <div class="order-1 md:order-2 space-y-6">
-            <span class="text-5xl font-extrabold text-gray-200 dark:text-gray-800 leading-none">03</span>
-            <h3 class="text-2xl font-bold text-deepNavy dark:text-white tracking-tighter">Hors-ligne, vocal et en équipe</h3>
-            <p class="text-sm text-textSecondary dark:text-gray-400 leading-relaxed max-w-md">
-                Travaillez même sans réseau : tout se synchronise au retour de la connexion. Enregistrez une vente à la voix, et invitez un cogérant avec des accès limités.
-            </p>
-            <ul class="space-y-3 pt-2">
-                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Mode hors-ligne avec synchronisation</li>
-                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Assistant vocal intelligent</li>
-                <li class="flex items-center gap-3 text-xs font-semibold text-deepNavy dark:text-gray-300"><span class="w-1.5 h-1.5 bg-primaryBlue rounded-full"></span> Plusieurs boutiques & invitations</li>
-            </ul>
-        </div>
-    </div>
-</section>
-
-<!-- COMMENT ÇA MARCHE -->
-<section class="py-24 bg-surface dark:bg-darkSurface">
-    <div class="max-w-5xl mx-auto px-6">
-        <h2 class="text-3xl font-extrabold text-deepNavy dark:text-white tracking-tighter text-center mb-16">Démarrez en 3 étapes</h2>
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="text-center space-y-3">
-                <div class="w-12 h-12 mx-auto bg-primaryBlue text-white rounded-full flex items-center justify-center font-extrabold">1</div>
-                <h3 class="font-bold text-deepNavy dark:text-white">Téléchargez</h3>
-                <p class="text-sm text-textSecondary dark:text-gray-400">Installez SmartStock et créez votre boutique en 2 minutes.</p>
-            </div>
-            <div class="text-center space-y-3">
-                <div class="w-12 h-12 mx-auto bg-primaryBlue text-white rounded-full flex items-center justify-center font-extrabold">2</div>
-                <h3 class="font-bold text-deepNavy dark:text-white">Ajoutez vos produits</h3>
-                <p class="text-sm text-textSecondary dark:text-gray-400">Prix de vente, prix de revient et quantité. C'est prêt.</p>
-            </div>
-            <div class="text-center space-y-3">
-                <div class="w-12 h-12 mx-auto bg-primaryBlue text-white rounded-full flex items-center justify-center font-extrabold">3</div>
-                <h3 class="font-bold text-deepNavy dark:text-white">Vendez & suivez</h3>
-                <p class="text-sm text-textSecondary dark:text-gray-400">Encaissez, imprimez le reçu et suivez vos bénéfices.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- TARIFS -->
-<section id="pricing" class="py-24 bg-white dark:bg-darkBg">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-extrabold text-deepNavy dark:text-white tracking-tighter">Un tarif simple, sans surprise</h2>
-            <p class="text-textSecondary dark:text-gray-400 mt-3">Essai gratuit, puis choisissez la formule qui vous convient.</p>
-        </div>
-
-        <div class="max-w-3xl mx-auto grid md:grid-cols-2 gap-6">
-            <!-- Gratuit -->
-            <div class="rounded-card border border-borderColor dark:border-gray-800 p-8 bg-white dark:bg-darkSurface">
-                <div class="text-sm font-bold text-textSecondary uppercase tracking-widest">Gratuit</div>
-                <div class="mt-3 text-3xl font-extrabold text-deepNavy dark:text-white">0 F</div>
-                <p class="text-xs text-textSecondary mt-1">Les fonctions essentielles</p>
-                <ul class="mt-6 space-y-3 text-sm text-deepNavy dark:text-gray-300">
-                    <li class="flex gap-2"><span class="text-successGreen">✓</span> 1 boutique</li>
-                    <li class="flex gap-2"><span class="text-successGreen">✓</span> Produits, ventes, réapprovisionnement</li>
-                    <li class="flex gap-2"><span class="text-successGreen">✓</span> Reçus PDF</li>
+                <h3 class="text-2xl md:text-3xl font-bold text-deepNavy tracking-tighter">Encaissez en quelques secondes</h3>
+                <p class="text-base text-bodyText leading-relaxed max-w-md">
+                    Recherchez un article, ajoutez-le au panier, validez. Un reçu PDF professionnel — avec votre nom, RCCM et IFU — est prêt à imprimer ou à partager.
+                </p>
+                <ul class="space-y-3 pt-1">
+                    <li class="flex items-start gap-3 text-sm font-medium text-deepNavy"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Recherche instantanée &amp; filtre par catégorie</li>
+                    <li class="flex items-start gap-3 text-sm font-medium text-deepNavy"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Reçu PDF à imprimer ou partager</li>
+                    <li class="flex items-start gap-3 text-sm font-medium text-deepNavy"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Stock mis à jour automatiquement</li>
                 </ul>
             </div>
-            <!-- Pro -->
-            <div class="rounded-card border-2 border-primaryBlue p-8 bg-primaryBlue/[0.03] relative">
-                <span class="absolute top-6 right-6 text-[9px] bg-primaryBlue text-white px-2 py-1 rounded uppercase font-bold">Recommandé</span>
-                <div class="text-sm font-bold text-primaryBlue uppercase tracking-widest">Pro</div>
-                <div class="mt-3 flex items-end gap-2">
-                    <span class="text-3xl font-extrabold text-deepNavy dark:text-white">{{ price_monthly }} F</span>
-                    <span class="text-sm text-textSecondary mb-1">/ mois</span>
+        </div>
+
+        <!-- 02 -->
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center reveal-on-scroll">
+            <div class="space-y-5">
+                <div class="w-12 h-12 rounded-card bg-successGreen/10 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-successGreen" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
                 </div>
-                <p class="text-xs text-textSecondary mt-1">ou {{ price_yearly }} F / an (~34 % d'économie)</p>
-                <ul class="mt-6 space-y-3 text-sm text-deepNavy dark:text-gray-300">
-                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Boutiques illimitées</li>
-                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Statistiques avancées (bénéfice, marge)</li>
-                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Assistant vocal</li>
-                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Invitations & cogérants</li>
-                    <li class="flex gap-2"><span class="text-primaryBlue">✓</span> Reçus sans la mention SmartStock</li>
+                <h3 class="text-2xl md:text-3xl font-bold text-deepNavy tracking-tighter">Vos bénéfices, calculés tout seuls</h3>
+                <p class="text-base text-bodyText leading-relaxed max-w-md">
+                    Renseignez le prix de revient une fois. SmartStock calcule votre marge et votre bénéfice — du jour comme de la période. Vous savez exactement ce que vous gagnez.
+                </p>
+                <div class="flex gap-4 pt-1">
+                    <div class="flex-1 p-5 bg-surfaceAlt rounded-card border border-borderColor">
+                        <div class="text-lg font-bold text-successGreen tracking-tight">Bénéfice</div>
+                        <div class="text-xs text-textSecondary font-medium mt-0.5">Du jour &amp; par période</div>
+                    </div>
+                    <div class="flex-1 p-5 bg-surfaceAlt rounded-card border border-borderColor">
+                        <div class="text-lg font-bold text-primaryBlue tracking-tight">Stock</div>
+                        <div class="text-xs text-textSecondary font-medium mt-0.5">Alertes stock critique</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="mx-auto w-full max-w-[208px] rounded-[2rem] border border-borderColor bg-white p-1.5 shadow-soft transition-all duration-500 hover:-translate-y-2 hover:shadow-lift">
+                    <div class="rounded-[1.7rem] overflow-hidden bg-white aspect-[9/19.5]">
+                        <img src="{% static 'landing/img/app-articles.png' %}" alt="Liste des articles et stock SmartStock" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 03 -->
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center reveal-on-scroll">
+            <div class="order-2 md:order-1">
+                <div class="mx-auto w-full max-w-[208px] rounded-[2rem] border border-borderColor bg-white p-1.5 shadow-soft transition-all duration-500 hover:-translate-y-2 hover:shadow-lift">
+                    <div class="rounded-[1.7rem] overflow-hidden bg-white aspect-[9/19.5]">
+                        <img src="{% static 'landing/img/app-voix.png' %}" alt="Assistant vocal SmartStock" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+            <div class="order-1 md:order-2 space-y-5">
+                <div class="w-12 h-12 rounded-card bg-accentCyan/10 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-accentCyan" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-bold text-deepNavy tracking-tighter">Hors-ligne, vocal et en équipe</h3>
+                <p class="text-base text-bodyText leading-relaxed max-w-md">
+                    Continuez à vendre quand le réseau lâche : tout se synchronise au retour de la connexion. Enregistrez une vente à la voix et invitez un cogérant avec des accès limités.
+                </p>
+                <ul class="space-y-3 pt-1">
+                    <li class="flex items-start gap-3 text-sm font-medium text-deepNavy"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Mode hors-ligne avec synchronisation</li>
+                    <li class="flex items-start gap-3 text-sm font-medium text-deepNavy"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Assistant vocal pour vendre à la voix</li>
+                    <li class="flex items-start gap-3 text-sm font-medium text-deepNavy"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Plusieurs boutiques &amp; cogérants</li>
                 </ul>
-                <a href="{{ download_url }}" class="mt-8 block text-center bg-primaryBlue text-white py-3 rounded-input font-bold hover:brightness-110 transition-all">
-                    Commencer l'essai
-                </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- PROMOTEUR -->
-<section id="promoteur" class="py-24 bg-surface">
-    <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-        <div class="space-y-6">
-            <span class="text-[11px] font-bold text-primaryBlue uppercase tracking-widest">Programme partenaire</span>
-            <h2 class="text-3xl font-extrabold text-deepNavy tracking-tighter">Devenez promoteur SmartStock</h2>
-            <p class="text-textSecondary leading-relaxed">
-                Partagez votre code promo, faites découvrir SmartStock aux commerçants autour de vous et gagnez <span class="font-bold text-deepNavy">25 % de commission</span> sur chaque abonnement. Suivez vos parrainages, votre solde et demandez vos retraits Mobile Money depuis votre espace.
+<!-- ════════════ 5. AFFILIATION ════════════ -->
+<section id="promoteur" class="relative overflow-hidden pt-24 md:pt-36 pb-20 md:pb-28 bg-surfaceAlt border-b border-borderColor">
+    <!-- Biseau de séparation -->
+    <svg class="absolute top-0 inset-x-0 w-full h-[40px] md:h-[64px] pointer-events-none" viewBox="0 0 1440 64" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 0 L1440 0 L1440 20 L0 64 Z" fill="#ffffff"/>
+    </svg>
+    <div class="relative max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div class="space-y-6 reveal-on-scroll">
+            <span class="text-sm font-semibold text-primaryBlue uppercase tracking-wider">Programme d'affiliation</span>
+            <h2 class="text-3xl md:text-[2.5rem] font-extrabold text-deepNavy tracking-tightest leading-[1.1]">Recommandez SmartStock, gagnez 25 %</h2>
+            <p class="text-base text-bodyText leading-relaxed">
+                Partagez votre code promo aux commerçants autour de vous. Pour chaque abonnement souscrit, vous touchez <span class="font-semibold text-deepNavy">25 % de commission</span> — versée par Mobile Money. Suivez vos parrainages, votre solde et vos retraits depuis votre espace.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4">
-                <a href="{% url 'promoter_signup' %}" class="bg-primaryBlue text-white px-8 py-4 rounded-input font-bold text-center hover:brightness-110 transition-all">Créer un compte promoteur</a>
-                <a href="{% url 'promoter_login' %}" class="border border-borderColor text-deepNavy px-8 py-4 rounded-input font-bold text-center hover:bg-white transition-all">Espace promoteur</a>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{% url 'promoter_signup' %}" class="inline-flex items-center justify-center bg-primaryBlue text-white px-7 py-4 rounded-input font-semibold hover:bg-primaryBlueDark active:scale-[0.99] transition-all">Devenir promoteur</a>
+                <a href="{% url 'promoter_login' %}" class="inline-flex items-center justify-center border border-borderColor bg-white text-deepNavy px-7 py-4 rounded-input font-semibold hover:bg-surface transition-colors">Espace promoteur</a>
             </div>
         </div>
-        <div class="grid grid-cols-3 gap-4">
-            <div class="p-6 bg-white rounded-card border border-borderColor text-center"><div class="text-2xl font-extrabold text-primaryBlue">25%</div><div class="text-[10px] font-bold text-textSecondary uppercase tracking-widest mt-1">Commission</div></div>
-            <div class="p-6 bg-white rounded-card border border-borderColor text-center"><div class="text-2xl font-extrabold text-primaryBlue">Mobile</div><div class="text-[10px] font-bold text-textSecondary uppercase tracking-widest mt-1">Money</div></div>
-            <div class="p-6 bg-white rounded-card border border-borderColor text-center"><div class="text-2xl font-extrabold text-primaryBlue">Suivi</div><div class="text-[10px] font-bold text-textSecondary uppercase tracking-widest mt-1">Temps réel</div></div>
+        <div class="grid grid-cols-3 gap-4 reveal-on-scroll">
+            <div class="p-6 bg-white rounded-card border border-borderColor text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-soft hover:border-primaryBlue/40">
+                <div class="text-3xl font-extrabold text-primaryBlue tracking-tightest">25%</div>
+                <div class="text-[11px] font-semibold text-textSecondary uppercase tracking-wider mt-1">Commission</div>
+            </div>
+            <div class="p-6 bg-white rounded-card border border-borderColor text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-soft hover:border-primaryBlue/40">
+                <div class="text-base font-extrabold text-deepNavy tracking-tight leading-tight mt-1">Mobile<br>Money</div>
+                <div class="text-[11px] font-semibold text-textSecondary uppercase tracking-wider mt-2">Retraits</div>
+            </div>
+            <div class="p-6 bg-white rounded-card border border-borderColor text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-soft hover:border-primaryBlue/40">
+                <div class="text-base font-extrabold text-deepNavy tracking-tight leading-tight mt-1">Suivi<br>en direct</div>
+                <div class="text-[11px] font-semibold text-textSecondary uppercase tracking-wider mt-2">Parrainages</div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- CTA FINAL -->
-<section id="cta" class="bg-primaryBlue py-20">
-    <div class="max-w-4xl mx-auto px-6 text-center space-y-8">
-        <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tighter">
-            Prêt à mieux gérer votre boutique ?
-        </h2>
-        <p class="text-white/80 text-lg">
-            Téléchargez SmartStock et démarrez votre essai gratuit aujourd'hui.
-        </p>
-        <div class="pt-4">
-            <a href="{{ download_url }}" class="inline-block bg-white text-primaryBlue px-10 py-4 rounded-input font-bold hover:bg-surface transition-all shadow-2xl">
-                Télécharger l'app
+<!-- ════════════ 6. TARIFS ════════════ -->
+<section id="pricing" class="py-20 md:py-28 bg-white">
+    <div class="max-w-3xl mx-auto px-6 text-center mb-14 reveal-on-scroll">
+        <span class="text-sm font-semibold text-primaryBlue uppercase tracking-wider">Tarifs</span>
+        <h2 class="mt-3 text-3xl md:text-[2.5rem] font-extrabold text-deepNavy tracking-tightest leading-[1.1]">Un prix simple, sans surprise</h2>
+        <p class="mt-4 text-lg text-bodyText">1 mois gratuit, puis choisissez. Sans engagement, résiliable à tout moment.</p>
+    </div>
+
+    <div class="max-w-3xl mx-auto px-6 grid md:grid-cols-2 gap-6 items-start reveal-on-scroll">
+        <!-- Gratuit -->
+        <div class="rounded-sheet border border-borderColor p-8 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift hover:border-primaryBlue/40">
+            <div class="text-sm font-semibold text-textSecondary uppercase tracking-wider">Gratuit</div>
+            <div class="mt-4 text-4xl font-extrabold text-deepNavy tracking-tightest">0 F</div>
+            <p class="text-sm text-textSecondary mt-1">Les fonctions essentielles, pour toujours</p>
+            <ul class="mt-7 space-y-3.5 text-sm text-deepNavy">
+                <li class="flex gap-3"><svg class="w-5 h-5 text-successGreen shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> 1 boutique</li>
+                <li class="flex gap-3"><svg class="w-5 h-5 text-successGreen shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Produits, ventes, réapprovisionnement</li>
+                <li class="flex gap-3"><svg class="w-5 h-5 text-successGreen shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Reçus PDF &amp; mode hors-ligne</li>
+            </ul>
+            <a href="{{ download_url }}" class="mt-8 block text-center border border-borderColor text-deepNavy py-3.5 rounded-input font-semibold hover:bg-surface transition-colors">
+                Commencer gratuitement
             </a>
+        </div>
+        <!-- Pro -->
+        <div class="rounded-sheet border-2 border-primaryBlue p-8 bg-white relative shadow-lift transition-all duration-300 hover:-translate-y-1.5">
+            <span class="absolute -top-3 left-8 text-[11px] bg-primaryBlue text-white px-3 py-1 rounded-full uppercase font-bold tracking-wider">Recommandé</span>
+            <div class="text-sm font-semibold text-primaryBlue uppercase tracking-wider">Pro</div>
+            <div class="mt-4 flex items-end gap-2">
+                <span class="text-4xl font-extrabold text-deepNavy tracking-tightest">{{ price_monthly }} F</span>
+                <span class="text-sm text-textSecondary mb-1.5">/ mois</span>
+            </div>
+            <p class="text-sm text-textSecondary mt-1">ou {{ price_yearly }} F / an (~34 % d'économie)</p>
+            <ul class="mt-7 space-y-3.5 text-sm text-deepNavy">
+                <li class="flex gap-3"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Boutiques illimitées</li>
+                <li class="flex gap-3"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Statistiques avancées (bénéfice, marge)</li>
+                <li class="flex gap-3"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Assistant vocal</li>
+                <li class="flex gap-3"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Invitations &amp; cogérants</li>
+                <li class="flex gap-3"><svg class="w-5 h-5 text-primaryBlue shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Reçus sans la mention SmartStock</li>
+            </ul>
+            <a href="{{ download_url }}" class="mt-8 block text-center bg-primaryBlue text-white py-3.5 rounded-input font-semibold hover:bg-primaryBlueDark active:scale-[0.99] transition-all shadow-glow">
+                Démarrer l'essai gratuit
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ════════════ 7. FAQ ════════════ -->
+<section id="faq" class="relative py-20 md:py-28 bg-surfaceAlt">
+    <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primaryBlue/30 to-transparent"></div>
+    <div class="max-w-3xl mx-auto px-6">
+        <div class="text-center mb-12 reveal-on-scroll">
+            <span class="text-sm font-semibold text-primaryBlue uppercase tracking-wider">FAQ</span>
+            <h2 class="mt-3 text-3xl md:text-[2.5rem] font-extrabold text-deepNavy tracking-tightest leading-[1.1]">Questions fréquentes</h2>
+        </div>
+        <div class="space-y-3">
+            <details class="group bg-white rounded-card border border-borderColor px-6 open:shadow-soft transition-all duration-200 hover:border-primaryBlue/40">
+                <summary class="flex items-center justify-between gap-4 py-5 cursor-pointer list-none [&::-webkit-details-marker]:hidden text-base font-semibold text-deepNavy">
+                    SmartStock fonctionne-t-il vraiment sans internet ?
+                    <svg class="w-5 h-5 text-textSecondary shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <p class="pb-5 text-sm text-bodyText leading-relaxed">Oui. Vous enregistrez vos ventes, gérez votre stock et imprimez vos reçus hors-ligne. Tout se synchronise automatiquement dès que la connexion revient.</p>
+            </details>
+            <details class="group bg-white rounded-card border border-borderColor px-6 open:shadow-soft transition-all duration-200 hover:border-primaryBlue/40">
+                <summary class="flex items-center justify-between gap-4 py-5 cursor-pointer list-none [&::-webkit-details-marker]:hidden text-base font-semibold text-deepNavy">
+                    Que se passe-t-il après l'essai gratuit ?
+                    <svg class="w-5 h-5 text-textSecondary shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <p class="pb-5 text-sm text-bodyText leading-relaxed">Après 1 mois, vous continuez gratuitement avec les fonctions essentielles, ou passez au plan Pro pour les statistiques avancées, l'assistant vocal et les boutiques illimitées. Aucune carte bancaire n'est demandée pour l'essai.</p>
+            </details>
+            <details class="group bg-white rounded-card border border-borderColor px-6 open:shadow-soft transition-all duration-200 hover:border-primaryBlue/40">
+                <summary class="flex items-center justify-between gap-4 py-5 cursor-pointer list-none [&::-webkit-details-marker]:hidden text-base font-semibold text-deepNavy">
+                    Comment payer l'abonnement Pro ?
+                    <svg class="w-5 h-5 text-textSecondary shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <p class="pb-5 text-sm text-bodyText leading-relaxed">Par Mobile Money, directement depuis l'application. Le paiement annuel vous fait économiser environ 34 % par rapport au mensuel.</p>
+            </details>
+            <details class="group bg-white rounded-card border border-borderColor px-6 open:shadow-soft transition-all duration-200 hover:border-primaryBlue/40">
+                <summary class="flex items-center justify-between gap-4 py-5 cursor-pointer list-none [&::-webkit-details-marker]:hidden text-base font-semibold text-deepNavy">
+                    Puis-je gérer plusieurs boutiques ou travailler en équipe ?
+                    <svg class="w-5 h-5 text-textSecondary shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <p class="pb-5 text-sm text-bodyText leading-relaxed">Oui, avec le plan Pro vous gérez un nombre illimité de boutiques. Vous pouvez aussi inviter un cogérant avec des accès limités.</p>
+            </details>
+        </div>
+    </div>
+</section>
+
+<!-- ════════════ 8. CTA FINAL ════════════ -->
+<section id="cta" class="py-20 md:py-24 bg-white">
+    <div class="max-w-5xl mx-auto px-6">
+        <div class="relative overflow-hidden rounded-sheet bg-deepNavy px-8 py-16 md:py-20 text-center shadow-lift">
+            <div class="relative max-w-2xl mx-auto space-y-7">
+                <h2 class="text-3xl md:text-[2.75rem] font-extrabold text-white tracking-tightest leading-[1.1]">
+                    Prêt à mieux gérer votre boutique ?
+                </h2>
+                <p class="text-white/70 text-lg leading-relaxed">
+                    Téléchargez SmartStock et démarrez votre mois d'essai gratuit aujourd'hui. Sans carte bancaire.
+                </p>
+                <div class="pt-1">
+                    <a href="{{ download_url }}" class="inline-flex items-center justify-center gap-2 bg-white text-primaryBlue px-8 py-4 rounded-input font-semibold text-base hover:bg-surface active:scale-[0.99] transition-all">
+                        Télécharger l'app
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="absolute -top-24 -right-24 w-72 h-72 bg-primaryBlue/40 blur-3xl rounded-full"></div>
+            <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-accentCyan/20 blur-3xl rounded-full"></div>
         </div>
     </div>
 </section>
