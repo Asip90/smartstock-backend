@@ -1,7 +1,9 @@
+from django import forms
 from django.contrib import admin, messages
 from django.utils import timezone
 from .models import (PromoCode, Referral, Transaction, Commission,
-                     WithdrawalRequest, AppConfig, CrashReport)
+                     WithdrawalRequest, AppConfig, CrashReport,
+                     AIConfig, NotificationLog)
 from . import firebase_service as fb
 
 
@@ -63,6 +65,47 @@ class AppConfigAdmin(admin.ModelAdmin):
     def sync_now(self, request, queryset):
         for obj in queryset:
             self._sync(request, obj)
+
+
+class AIConfigForm(forms.ModelForm):
+    class Meta:
+        model = AIConfig
+        fields = '__all__'
+        widgets = {
+            'api_key': forms.PasswordInput(render_value=True),
+        }
+
+
+@admin.register(AIConfig)
+class AIConfigAdmin(admin.ModelAdmin):
+    """Pilote le moteur de notifications IA (interrupteur, fournisseur,
+    modèle, persona...). Enregistrement unique."""
+    form = AIConfigForm
+    list_display = ('enabled', 'provider', 'model', 'ai_morning',
+                     'ai_evening', 'ai_stock', 'updated_at')
+
+    def has_add_permission(self, request):
+        # Enregistrement unique.
+        return not AIConfig.objects.exists()
+
+
+@admin.register(NotificationLog)
+class NotificationLogAdmin(admin.ModelAdmin):
+    """Journal des notifications envoyées par le moteur IA (consultation seule)."""
+    list_display = ('created_at', 'kind', 'uid', 'ai_used', 'angle')
+    list_filter = ('kind', 'ai_used')
+    search_fields = ('uid', 'body')
+    readonly_fields = ('uid', 'kind', 'title', 'body', 'angle', 'ai_used', 'created_at')
+    date_hierarchy = 'created_at'
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(PromoCode)
