@@ -190,7 +190,7 @@ class MorningFactsTests(SimpleTestCase):
         produits = [
             FakeDoc('p1', {'shopId': 'shop1', 'name': 'Riz', 'quantity': 1, 'nbreCritique': 5}),
         ]
-        db = FakeDB(collections={'sales': sales, 'produits': produits, 'credits': []})
+        db = FakeDB(collections={'sales': sales, 'produits': produits, 'customers': []})
 
         facts = morning_facts(db, 'shop1', {'name': 'Ma Boutique'})
 
@@ -208,19 +208,19 @@ class MorningFactsTests(SimpleTestCase):
                 'shopId': 'shop1', 'totalAmount': 1000, 'amountPaid': 1000,
                 'saleDate': yesterday_ts,
                 'items': [
-                    {'name': 'Riz', 'quantity': 2},
-                    {'name': 'Sucre', 'quantity': 1},
+                    {'name': 'Riz', 'qty': 2},
+                    {'name': 'Sucre', 'qty': 1},
                 ],
             }),
             FakeDoc('s2', {
                 'shopId': 'shop1', 'totalAmount': 500, 'amountPaid': 500,
                 'saleDate': yesterday_ts,
                 'items': [
-                    {'name': 'Riz', 'quantity': 3},
+                    {'name': 'Riz', 'qty': 3},
                 ],
             }),
         ]
-        db = FakeDB(collections={'sales': sales, 'produits': [], 'credits': []})
+        db = FakeDB(collections={'sales': sales, 'produits': [], 'customers': []})
 
         facts = morning_facts(db, 'shop1', {'name': 'Ma Boutique'})
 
@@ -235,13 +235,13 @@ class MorningFactsTests(SimpleTestCase):
                 'saleDate': yesterday_ts,
             }),
         ]
-        db = FakeDB(collections={'sales': sales, 'produits': [], 'credits': []})
+        db = FakeDB(collections={'sales': sales, 'produits': [], 'customers': []})
 
         facts = morning_facts(db, 'shop1', {'name': 'Ma Boutique'})
 
         self.assertNotIn('best_seller', facts)
 
-    def test_debts_keys_present_when_credits_exist(self):
+    def test_debts_keys_present_when_customers_have_debt(self):
         yesterday_ts = _yesterday_ts()
         sales = [
             FakeDoc('s1', {
@@ -249,20 +249,20 @@ class MorningFactsTests(SimpleTestCase):
                 'saleDate': yesterday_ts,
             }),
         ]
-        credits = [
-            FakeDoc('c1', {'shopId': 'shop1', 'balance': 1500}),
-            FakeDoc('c2', {'shopId': 'shop1', 'totalAmount': 1000, 'amountPaid': 400}),
-            # Solde nul -> ne compte pas dans debts_count/total.
-            FakeDoc('c3', {'shopId': 'shop1', 'balance': 0}),
+        customers = [
+            FakeDoc('c1', {'shopId': 'shop1', 'totalDebt': 1500}),
+            FakeDoc('c2', {'shopId': 'shop1', 'totalDebt': 600}),
+            # Dette nulle -> ne compte pas dans debts_count/total.
+            FakeDoc('c3', {'shopId': 'shop1', 'totalDebt': 0}),
         ]
-        db = FakeDB(collections={'sales': sales, 'produits': [], 'credits': credits})
+        db = FakeDB(collections={'sales': sales, 'produits': [], 'customers': customers})
 
         facts = morning_facts(db, 'shop1', {'name': 'Ma Boutique'})
 
         self.assertEqual(facts['debts_count'], 2)
         self.assertEqual(facts['debts_total'], 2100.0)
 
-    def test_debts_keys_omitted_when_credits_collection_empty(self):
+    def test_debts_keys_omitted_when_customers_collection_empty(self):
         yesterday_ts = _yesterday_ts()
         sales = [
             FakeDoc('s1', {
@@ -270,14 +270,14 @@ class MorningFactsTests(SimpleTestCase):
                 'saleDate': yesterday_ts,
             }),
         ]
-        db = FakeDB(collections={'sales': sales, 'produits': [], 'credits': []})
+        db = FakeDB(collections={'sales': sales, 'produits': [], 'customers': []})
 
         facts = morning_facts(db, 'shop1', {'name': 'Ma Boutique'})
 
         self.assertNotIn('debts_count', facts)
         self.assertNotIn('debts_total', facts)
 
-    def test_debts_keys_omitted_when_credits_collection_raises(self):
+    def test_debts_keys_omitted_when_customers_collection_raises(self):
         yesterday_ts = _yesterday_ts()
         sales = [
             FakeDoc('s1', {
@@ -287,7 +287,7 @@ class MorningFactsTests(SimpleTestCase):
         ]
         db = FakeDB(
             collections={'sales': sales, 'produits': []},
-            raise_on={'credits'},
+            raise_on={'customers'},
         )
 
         facts = morning_facts(db, 'shop1', {'name': 'Ma Boutique'})

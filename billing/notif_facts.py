@@ -91,9 +91,10 @@ def morning_facts(db, shop_id: str, shop_data: dict) -> dict:
     - ``best_seller`` : nom du produit le plus vendu (en quantité) hier,
       uniquement si les documents de vente contiennent une liste d'articles
       exploitable ; sinon la clé est omise.
-    - ``debts_count`` / ``debts_total`` : nombre de clients avec un solde
-      impayé et la somme de ces soldes, lus dans la collection ``credits`` ;
-      omis si la collection est vide, absente ou si la lecture échoue.
+    - ``debts_count`` / ``debts_total`` : nombre de clients avec une dette en
+      cours et la somme de ces dettes, lus dans la collection ``customers``
+      (champ ``totalDebt``) ; omis si la collection est vide, absente ou si la
+      lecture échoue.
     """
     now = timezone.localtime()
     start_of_today = timezone.make_aware(datetime.combine(now.date(), time.min))
@@ -151,15 +152,10 @@ def morning_facts(db, shop_id: str, shop_data: dict) -> dict:
         debts_count = 0
         debts_total = 0.0
         found_any = False
-        for c in db.collection('credits').where('shopId', '==', shop_id).stream():
+        for c in db.collection('customers').where('shopId', '==', shop_id).stream():
             found_any = True
             cd = c.to_dict() or {}
-            balance = cd.get('balance')
-            if balance is None:
-                total = float(cd.get('totalAmount', 0) or 0)
-                paid = float(cd.get('amountPaid', 0) or 0)
-                balance = total - paid
-            balance = float(balance or 0)
+            balance = float(cd.get('totalDebt', 0) or 0)
             if balance > 0:
                 debts_count += 1
                 debts_total += balance
