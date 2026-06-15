@@ -129,6 +129,83 @@ class CrashReport(models.Model):
         return f'[{self.platform} {self.app_version}] {head[:60]}'
 
 
+class AIConfig(models.Model):
+    """Configuration du moteur de notifications IA, pilotable depuis Jazzmin
+    sans toucher au code. Enregistrement unique."""
+    PROVIDER_CHOICES = [('mistral', 'Mistral'), ('openrouter', 'OpenRouter')]
+
+    DEFAULT_PERSONA = (
+        "Tu es l'assistant de SmartStock, une appli de gestion de stock et de "
+        "caisse pour commerçants en Afrique de l'Ouest. Tu rédiges de courtes "
+        "notifications en français, naturelles et chaleureuses mais toujours "
+        "professionnelles, jamais robotiques. Va droit au but, en 2 phrases "
+        "maximum, sans jargon technique ni emoji en excès. Les montants sont "
+        "toujours exprimés en FCFA."
+    )
+
+    enabled = models.BooleanField(
+        default=False, help_text="Interrupteur général de l'IA pour les notifications.")
+    provider = models.CharField(
+        max_length=20, choices=PROVIDER_CHOICES, default='mistral')
+    model = models.CharField(max_length=120, default='mistral-small-latest')
+    api_key = models.CharField(max_length=255, blank=True)
+    temperature = models.FloatField(default=0.9)
+    max_tokens = models.PositiveIntegerField(default=120)
+    persona = models.TextField(default=DEFAULT_PERSONA)
+    ai_morning = models.BooleanField(default=True)
+    ai_evening = models.BooleanField(default=True)
+    ai_stock = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Configuration IA"
+        verbose_name_plural = "Configuration IA"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_solo(cls):
+        return cls.objects.get_or_create(pk=1)[0]
+
+    def __str__(self):
+        return f"Config IA ({self.provider}/{self.model}, {'ON' if self.enabled else 'OFF'})"
+
+
+class NotificationLog(models.Model):
+    """Journal des notifications envoyées par le moteur IA (audit +
+    anti-répétition)."""
+    uid = models.CharField(max_length=128, db_index=True)
+    kind = models.CharField(max_length=20)  # 'morning' | 'evening' | 'stock' | ...
+    title = models.CharField(max_length=255, blank=True)
+    body = models.TextField()
+    angle = models.CharField(max_length=40, blank=True)
+    ai_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Notification envoyée"
+        verbose_name_plural = "Notifications envoyées"
+
+    def __str__(self):
+        return f"[{self.kind}] {self.uid} {self.created_at:%Y-%m-%d %H:%M}"
+
+    @classmethod
+    def recent_for(cls, uid, kind, n=6):
+        """Retourne (liste des n derniers `body` pour uid+kind, du plus récent
+        au plus ancien, et le dernier `angle` ou None)."""
+        qs = list(
+            cls.objects.filter(uid=uid, kind=kind)
+            .order_by('-created_at')
+            .values_list('body', 'angle')[:n]
+        )
+        bodies = [body for body, _ in qs]
+        angle = qs[0][1] or None if qs else None
+        return bodies, angle
+
+
 class Commission(models.Model):
     STATUS_CHOICES = [('pending', 'À verser'), ('paid', 'Versée')]
     referral = models.ForeignKey(Referral, on_delete=models.CASCADE, related_name='commissions')
