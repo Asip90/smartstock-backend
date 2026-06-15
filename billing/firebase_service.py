@@ -80,6 +80,7 @@ def notif_settings(uid: str):
         'notif_critical_stock': data.get('notif_critical_stock', True),
         'notif_new_sale': data.get('notif_new_sale', True),
         'notif_daily_summary': data.get('notif_daily_summary', False),
+        'notif_morning_briefing': data.get('notif_morning_briefing', True),
     }
 
 

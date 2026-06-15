@@ -10,8 +10,8 @@ le propriétaire et les membres qui ont gardé l'alerte « stock critique » act
 from django.core.management.base import BaseCommand
 
 from billing import firebase_service as fb
-
-DEFAULT_THRESHOLD = 5  # repli si nbreCritique non défini (aligné sur l'app)
+from billing import notif_engine
+from billing import notif_facts
 
 
 class Command(BaseCommand):
@@ -24,19 +24,12 @@ class Command(BaseCommand):
 
         for shop in shops:
             shop_id = shop.id
-            data = shop.to_dict() or {}
-            owner_id = data.get('ownerId')
+            shop_data = shop.to_dict() or {}
+            owner_id = shop_data.get('ownerId')
 
-            # Produits sous le seuil critique (comparaison à deux champs -> en Python).
-            low = []
-            for p in db.collection('produits').where('shopId', '==', shop_id).stream():
-                pd = p.to_dict() or {}
-                qty = pd.get('quantity', 0) or 0
-                threshold = pd.get('nbreCritique') or DEFAULT_THRESHOLD
-                if qty <= threshold:
-                    low.append((pd.get('name', 'Produit'), qty))
+            facts = notif_facts.stock_facts(db, shop_id, shop_data)
 
-            if not low:
+            if facts['count'] == 0:
                 continue
 
             # Destinataires : propriétaire + membres actifs.
@@ -49,21 +42,21 @@ class Command(BaseCommand):
                 if uid:
                     recipients.add(uid)
 
-            title = f"Stock critique — {data.get('name', 'votre boutique')}"
-            count = len(low)
-            sample = ', '.join(n for n, _ in low[:3])
+            title = f"Stock critique — {shop_data.get('name', 'votre boutique')}"
+            count = facts['count']
+            sample = ', '.join(facts['samples'])
             body = (f"{count} produit(s) en stock faible : {sample}"
                     + ('…' if count > 3 else ''))
 
             for uid in recipients:
                 if not fb.notif_settings(uid).get('notif_critical_stock', True):
                     continue
-                tokens = fb.tokens_for_uid(uid)
-                sent = fb.send_push(
-                    tokens, title, body,
-                    data={'type': 'critical_stock', 'shopId': shop_id},
+                recipient_facts = {**facts, 'first_name': notif_facts.first_name(db, uid)}
+                total_sent += notif_engine.compose_and_send(
+                    uid=uid, kind='stock', facts=recipient_facts,
+                    fallback_title=title, fallback_body=body,
+                    push_data={'type': 'critical_stock', 'shopId': shop_id},
                 )
-                total_sent += sent
 
         self.stdout.write(self.style.SUCCESS(
             f"Alertes stock critique envoyées : {total_sent}"))

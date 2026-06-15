@@ -6,12 +6,11 @@ Notifie le propriétaire et les membres ayant activé « résumé quotidien »
 À planifier le soir via cron, p. ex. :
     0 20 * * * cd /chemin/backend && python manage.py send_daily_summary
 """
-from datetime import datetime, time
-
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from billing import firebase_service as fb
+from billing import notif_engine
+from billing import notif_facts
 
 
 class Command(BaseCommand):
@@ -19,36 +18,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         db = fb.db()
-        now = timezone.localtime()
-        start = timezone.make_aware(datetime.combine(now.date(), time.min))
         total_sent = 0
 
         for shop in db.collection('shops').stream():
             shop_id = shop.id
-            data = shop.to_dict() or {}
-            owner_id = data.get('ownerId')
+            shop_data = shop.to_dict() or {}
+            owner_id = shop_data.get('ownerId')
 
-            revenue = 0.0
-            cash = 0.0
-            count = 0
-            sales = (db.collection('sales')
-                     .where('shopId', '==', shop_id)
-                     .where('saleDate', '>=', start)
-                     .stream())
-            for s in sales:
-                sd = s.to_dict() or {}
-                total = float(sd.get('totalAmount', 0) or 0)
-                paid = sd.get('amountPaid')
-                paid = float(paid) if paid is not None else total
-                revenue += total
-                cash += paid
-                count += 1
+            facts = notif_facts.evening_facts(db, shop_id, shop_data)
 
-            if count == 0:
+            if facts['count'] == 0:
                 continue
 
-            credit = revenue - cash
-            title = f"Bilan du jour — {data.get('name', 'votre boutique')}"
+            count = facts['count']
+            revenue = facts['revenue']
+            cash = facts['cash']
+            credit = facts['credit']
+
+            title = f"Bilan du jour — {shop_data.get('name', 'votre boutique')}"
             body = (f"{count} vente(s) · CA {revenue:,.0f} FCFA · "
                     f"encaissé {cash:,.0f}"
                     + (f" · à crédit {credit:,.0f}" if credit > 0 else ""))
@@ -67,10 +54,11 @@ class Command(BaseCommand):
                     continue
                 if not fb.notif_settings(uid).get('notif_daily_summary', False):
                     continue
-                tokens = fb.tokens_for_uid(uid)
-                total_sent += fb.send_push(
-                    tokens, title, body,
-                    data={'type': 'daily_summary', 'shopId': shop_id},
+                recipient_facts = {**facts, 'first_name': notif_facts.first_name(db, uid)}
+                total_sent += notif_engine.compose_and_send(
+                    uid=uid, kind='evening', facts=recipient_facts,
+                    fallback_title=title, fallback_body=body,
+                    push_data={'type': 'daily_summary', 'shopId': shop_id},
                 )
 
         self.stdout.write(self.style.SUCCESS(
