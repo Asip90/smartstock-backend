@@ -169,6 +169,71 @@ def morning_facts(db, shop_id: str, shop_data: dict) -> dict:
     return facts
 
 
+def weekly_facts(db, shop_id: str, shop_data: dict) -> dict:
+    """Faits du bilan hebdomadaire : comparaison semaine en cours vs semaine
+    précédente (fenêtres glissantes de 7 jours) + meilleur jour de la semaine.
+
+    - ``count`` / ``revenue`` : ventes des 7 derniers jours (de J-7 inclus à
+      maintenant).
+    - ``prev_revenue`` : CA des 7 jours précédents (de J-14 à J-7).
+    - ``growth`` : variation en % du CA d'une semaine à l'autre. ``None`` si la
+      semaine précédente est à 0 (croissance non calculable).
+    - ``best_day`` / ``best_day_revenue`` : date (``YYYY-MM-DD``) et CA du
+      meilleur jour de la semaine en cours ; omis s'il n'y a aucune vente.
+
+    Gère proprement l'absence de ventes (compteurs à 0, clés ``best_day``
+    omises, ``growth`` à ``None``).
+    """
+    now = timezone.localtime()
+    start_today = timezone.make_aware(datetime.combine(now.date(), time.min))
+    # Fenêtre semaine en cours : 7 jours incluant aujourd'hui (J-6 .. auj.).
+    start_this_week = start_today - timedelta(days=6)
+    start_prev_week = start_this_week - timedelta(days=7)
+
+    revenue = 0.0
+    count = 0
+    prev_revenue = 0.0
+    per_day = {}  # date ISO -> CA cumulé (semaine en cours)
+
+    sales = (db.collection('sales')
+             .where('shopId', '==', shop_id)
+             .where('saleDate', '>=', start_prev_week)
+             .stream())
+    for s in sales:
+        sd = s.to_dict() or {}
+        total = float(sd.get('totalAmount', 0) or 0)
+        sale_date = sd.get('saleDate')
+        if sale_date is None:
+            continue
+        if sale_date >= start_this_week:
+            revenue += total
+            count += 1
+            day_key = timezone.localtime(sale_date).date().isoformat()
+            per_day[day_key] = per_day.get(day_key, 0.0) + total
+        elif sale_date >= start_prev_week:
+            prev_revenue += total
+
+    if prev_revenue > 0:
+        growth = round((revenue - prev_revenue) / prev_revenue * 100, 1)
+    else:
+        growth = None
+
+    facts = {
+        'shop_name': shop_data.get('name', 'votre boutique'),
+        'count': count,
+        'revenue': revenue,
+        'prev_revenue': prev_revenue,
+        'growth': growth,
+    }
+
+    if per_day:
+        best_day, best_day_revenue = max(per_day.items(), key=lambda kv: kv[1])
+        facts['best_day'] = best_day
+        facts['best_day_revenue'] = best_day_revenue
+
+    return facts
+
+
 def first_name(db, uid: str) -> str:
     """Renvoie le premier prénom de l'utilisateur ``users/{uid}``.
 

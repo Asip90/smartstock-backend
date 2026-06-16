@@ -19,6 +19,7 @@ ANGLES: dict[str, list[str]] = {
     'morning': ['motivant', 'factuel', 'conseil', 'encouragement'],
     'evening': ['factuel', 'félicitation', 'bilan', 'encouragement'],
     'stock': ['alerte', 'factuel', 'conseil'],
+    'weekly': ['bilan', 'félicitation', 'motivant', 'factuel'],
 }
 
 # Angles de repli pour un type de notification inconnu.
