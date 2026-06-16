@@ -21,6 +21,8 @@ class PromoCode(models.Model):
                   "(ex : 45 pour 45 jours). Modifiable à tout moment.")
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    # UID Firebase du promoteur (renseigné lors d'une création via l'API mobile).
+    firebase_uid = models.CharField(max_length=128, blank=True, db_index=True, default='')
 
     def trial_duration_days(self) -> int:
         """Durée d'essai effective en jours : trial_days si > 0, sinon trial_months*30."""
