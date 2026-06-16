@@ -1,6 +1,8 @@
 """Tests de la tarification : essai 14 jours, -50% sur le 1er paiement d'un filleul."""
+from io import StringIO
 from unittest.mock import patch
 
+from django.core.management import call_command
 from django.test import TestCase, override_settings
 
 from billing.models import PromoCode, Referral, Transaction
@@ -118,3 +120,50 @@ class PricingPromoTests(TestCase):
         tx = Transaction.objects.get(uid=UID)
         self.assertEqual(tx.amount, 15000)
         self.assertEqual(_m.call_args.kwargs['amount'], 15000)
+
+
+class BackfillEntitlementsTests(TestCase):
+    """Grand-fathering : un entitlement pour chaque UID connu sans doc."""
+
+    def setUp(self):
+        # UID-1 a déjà un doc, UID-2 et UID-3 (parrainage) n'en ont pas.
+        Transaction.objects.create(uid='uid-1', email='a@x', plan='monthly',
+                                   amount=1900, status='paid')
+        Transaction.objects.create(uid='uid-2', email='b@x', plan='monthly',
+                                   amount=1900, status='paid')
+        code = PromoCode.objects.create(code='REF', influencer_name='X', trial_days=14)
+        Referral.objects.create(promo_code=code, referred_uid='uid-3',
+                                referred_email='c@x')
+        # uid-1 possède déjà un entitlement, les autres non.
+        self._existing = {'uid-1': {'plan': 'pro', 'status': 'active'}}
+
+    def _patch_fb(self):
+        p_get = patch('billing.firebase_service.get_entitlement',
+                      side_effect=lambda u: self._existing.get(u))
+        p_set = patch('billing.firebase_service.set_entitlement')
+        get = p_get.start()
+        set_ = p_set.start()
+        self.addCleanup(p_get.stop)
+        self.addCleanup(p_set.stop)
+        return get, set_
+
+    def test_dry_run_never_writes(self):
+        _get, set_ = self._patch_fb()
+        out = StringIO()
+        call_command('backfill_entitlements', stdout=out)
+        set_.assert_not_called()
+        self.assertIn('dry-run', out.getvalue())
+
+    def test_commit_writes_only_missing(self):
+        _get, set_ = self._patch_fb()
+        out = StringIO()
+        call_command('backfill_entitlements', '--commit', stdout=out)
+        # Écrit uniquement pour uid-2 et uid-3 (uid-1 a déjà un doc).
+        written = {call.args[0] for call in set_.call_args_list}
+        self.assertEqual(written, {'uid-2', 'uid-3'})
+        self.assertNotIn('uid-1', written)
+        # Vérifie les kwargs passés à set_entitlement.
+        kwargs = set_.call_args_list[0].kwargs
+        self.assertEqual(kwargs['plan'], 'pro')
+        self.assertEqual(kwargs['status'], 'active')
+        self.assertIn('current_period_end', kwargs)
