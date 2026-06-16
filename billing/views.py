@@ -31,7 +31,7 @@ def _body(request):
 
 @csrf_exempt
 def signup(request):
-    """Initialise l'essai. {promo_code?}. Essai = 3 mois si code valide, sinon 1 mois.
+    """Initialise l'essai. {promo_code?}. Essai = 14 jours ; le code ne l'allonge plus.
 
     Un utilisateur ne peut bénéficier de l'essai et d'un code promo qu'UNE SEULE
     FOIS à vie : tout appel ultérieur est rejeté (évite qu'on régénère un code à
@@ -57,13 +57,11 @@ def signup(request):
             return JsonResponse({'error': 'essai_deja_utilise'}, status=409)
         return JsonResponse({'status': existing.get('status', 'free'), 'already': True})
 
-    trial_days = 30  # essai par défaut sans code
+    trial_days = 14  # essai unique de 14 jours, le code ne l'allonge plus
     if code:
         promo = PromoCode.objects.filter(code__iexact=code, active=True).first()
         if not promo:
             return JsonResponse({'error': 'code_promo_invalide'}, status=400)
-        # Durée fixée librement dans l'admin (en jours, sinon en mois).
-        trial_days = promo.trial_duration_days()
         # 1 seul parrainage par filleul (referred_uid est unique en base).
         Referral.objects.create(
             promo_code=promo,
@@ -92,6 +90,13 @@ def subscribe(request):
         return JsonResponse({'error': 'plan_invalide'}, status=400)
     amount = settings.PRICE_MONTHLY if plan == 'monthly' else settings.PRICE_YEARLY
 
+    # -50% sur le PREMIER paiement d'un filleul parrainé (jamais payé encore).
+    referred = Referral.objects.filter(referred_uid=uid).exists()
+    already_paid = Transaction.objects.filter(uid=uid, status='paid').exists()
+    discounted = referred and not already_paid
+    if discounted:
+        amount = amount // 2
+
     tx = Transaction.objects.create(uid=uid, email=email, plan=plan, amount=amount)
     try:
         # Après paiement, FedaPay redirige vers cette page : l'app détecte l'URL
@@ -111,7 +116,7 @@ def subscribe(request):
     tx.fedapay_id = checkout['fedapay_id']
     tx.save()
     return JsonResponse({'checkout_url': checkout['url'], 'token': checkout['token'],
-                         'transaction_id': tx.id})
+                         'transaction_id': tx.id, 'discounted': discounted})
 
 
 @csrf_exempt
