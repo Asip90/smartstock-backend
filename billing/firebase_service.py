@@ -56,6 +56,19 @@ def get_entitlement(uid: str):
     return doc.to_dict() if doc.exists else None
 
 
+def list_all_uids():
+    """Tous les UID des comptes Firebase Auth (paginé). Source exhaustive : couvre
+    aussi les comptes qui se sont connectés sans jamais transiger ni être parrainés."""
+    _ensure_init()
+    uids = []
+    page = fb_auth.list_users()
+    while page:
+        for user in page.users:
+            uids.append(user.uid)
+        page = page.get_next_page()
+    return uids
+
+
 def db():
     """Client Firestore initialisé (pour les tâches d'envoi de notifications)."""
     _ensure_init()

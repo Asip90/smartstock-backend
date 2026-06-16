@@ -10,9 +10,9 @@ UID connu qui n'en possède pas encore.
     .venv/bin/python manage.py backfill_entitlements --commit   # applique les écritures
     .venv/bin/python manage.py backfill_entitlements --commit --days 30
 
-Les UID connus sont collectés depuis la base (transactions + parrainages). Firebase
-ne fournit pas d'helper pour lister la collection users côté serveur ici, donc on se
-limite à l'union des UID présents en base.
+Les UID sont collectés depuis Firebase Auth (tous les comptes, via `list_all_uids`)
+ET la base (transactions + parrainages). Si Firebase Auth est injoignable, repli
+automatique sur les seuls UID présents en base (avec un avertissement).
 """
 from datetime import timedelta
 
@@ -23,10 +23,22 @@ from billing import firebase_service as fb
 from billing.models import Referral, Transaction
 
 
-def _known_uids():
-    """Union dédupliquée des UID connus en base (transactions + parrainages)."""
+def _known_uids(stdout=None):
+    """Ensemble dédupliqué des UID à couvrir.
+
+    Source principale : tous les comptes Firebase Auth (`list_all_uids`), qui inclut
+    les utilisateurs jamais vus en base. En complément (et en repli si Firebase Auth
+    est injoignable), l'union des UID présents en base (transactions + parrainages).
+    """
     uids = set(Transaction.objects.values_list('uid', flat=True))
     uids |= set(Referral.objects.values_list('referred_uid', flat=True))
+    try:
+        uids |= set(fb.list_all_uids())
+    except Exception as e:  # pragma: no cover - dépend de l'environnement Firebase
+        if stdout is not None:
+            stdout.write(
+                f"[avertissement] Firebase Auth injoignable ({e}); "
+                "repli sur les UID présents en base uniquement.")
     # On retire les valeurs vides / None.
     return {u for u in uids if u}
 
@@ -47,7 +59,7 @@ class Command(BaseCommand):
         days = options['days']
         commit = options['commit']
 
-        uids = _known_uids()
+        uids = _known_uids(self.stdout)
         period_end = timezone.now() + timedelta(days=days)
 
         total = len(uids)

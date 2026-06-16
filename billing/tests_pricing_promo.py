@@ -137,14 +137,18 @@ class BackfillEntitlementsTests(TestCase):
         # uid-1 possède déjà un entitlement, les autres non.
         self._existing = {'uid-1': {'plan': 'pro', 'status': 'active'}}
 
-    def _patch_fb(self):
+    def _patch_fb(self, auth_uids=()):
         p_get = patch('billing.firebase_service.get_entitlement',
                       side_effect=lambda u: self._existing.get(u))
         p_set = patch('billing.firebase_service.set_entitlement')
+        p_list = patch('billing.firebase_service.list_all_uids',
+                       return_value=list(auth_uids))
         get = p_get.start()
         set_ = p_set.start()
+        p_list.start()
         self.addCleanup(p_get.stop)
         self.addCleanup(p_set.stop)
+        self.addCleanup(p_list.stop)
         return get, set_
 
     def test_dry_run_never_writes(self):
@@ -167,3 +171,11 @@ class BackfillEntitlementsTests(TestCase):
         self.assertEqual(kwargs['plan'], 'pro')
         self.assertEqual(kwargs['status'], 'active')
         self.assertIn('current_period_end', kwargs)
+
+    def test_commit_includes_firebase_auth_only_users(self):
+        # uid-4 n'existe qu'au niveau Firebase Auth (jamais vu en base) et n'a pas de doc.
+        _get, set_ = self._patch_fb(auth_uids=['uid-1', 'uid-4'])
+        out = StringIO()
+        call_command('backfill_entitlements', '--commit', stdout=out)
+        written = {call.args[0] for call in set_.call_args_list}
+        self.assertEqual(written, {'uid-2', 'uid-3', 'uid-4'})
