@@ -1,4 +1,4 @@
-"""Tests de la tarification : essai 14 jours, -50% sur le 1er paiement d'un filleul."""
+"""Tests de la tarification : essai 30 jours, -50% sur les 3 premiers mois d'un filleul."""
 from io import StringIO
 from unittest.mock import patch
 
@@ -67,12 +67,14 @@ class PricingPromoTests(TestCase):
         self.assertEqual(second.status_code, 409)
 
     # --- subscribe -------------------------------------------------------
-    def _add_referral(self):
+    def _add_referral(self, months_left=3):
         code = self._make_promo()
-        Referral.objects.create(promo_code=code, referred_uid=UID, referred_email=EMAIL)
+        return Referral.objects.create(
+            promo_code=code, referred_uid=UID, referred_email=EMAIL,
+            discount_months_left=months_left)
 
     @patch('billing.fedapay.create_checkout', return_value=FAKE_CHECKOUT)
-    def test_subscribe_referred_first_payment_monthly_discounted(self, _m):
+    def test_subscribe_referred_monthly_discounted(self, _m):
         self._add_referral()
         self._patch_auth()
         resp = self.client.post('/api/subscribe', {'plan': 'monthly'},
@@ -81,11 +83,12 @@ class PricingPromoTests(TestCase):
         self.assertTrue(resp.json()['discounted'])
         tx = Transaction.objects.get(uid=UID)
         self.assertEqual(tx.amount, 950)
-        _m.assert_called_once()
+        self.assertTrue(tx.discounted)
         self.assertEqual(_m.call_args.kwargs['amount'], 950)
 
     @patch('billing.fedapay.create_checkout', return_value=FAKE_CHECKOUT)
-    def test_subscribe_referred_first_payment_yearly_discounted(self, _m):
+    def test_subscribe_referred_yearly_discount_is_three_months_value(self, _m):
+        # Annuel : réduction = 3 x (mensuel//2) = 2850 -> 15000-2850 = 12150.
         self._add_referral()
         self._patch_auth()
         resp = self.client.post('/api/subscribe', {'plan': 'yearly'},
@@ -93,20 +96,29 @@ class PricingPromoTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(resp.json()['discounted'])
         tx = Transaction.objects.get(uid=UID)
-        self.assertEqual(tx.amount, 7500)
-        self.assertEqual(_m.call_args.kwargs['amount'], 7500)
+        self.assertEqual(tx.amount, 12150)
+        self.assertEqual(_m.call_args.kwargs['amount'], 12150)
 
     @patch('billing.fedapay.create_checkout', return_value=FAKE_CHECKOUT)
-    def test_subscribe_referred_already_paid_full_price(self, _m):
-        self._add_referral()
+    def test_subscribe_discount_persists_while_months_left(self, _m):
+        # Même après un paiement, tant qu'il reste des mois, la remise tient.
+        self._add_referral(months_left=2)
         Transaction.objects.create(uid=UID, email=EMAIL, plan='monthly',
-                                   amount=1900, status='paid')
+                                   amount=950, status='paid', discounted=True)
         self._patch_auth()
         resp = self.client.post('/api/subscribe', {'plan': 'monthly'},
                                 content_type='application/json', **AUTH)
-        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.json()['discounted'])
+        self.assertEqual(_m.call_args.kwargs['amount'], 950)
+
+    @patch('billing.fedapay.create_checkout', return_value=FAKE_CHECKOUT)
+    def test_subscribe_full_price_when_discount_exhausted(self, _m):
+        self._add_referral(months_left=0)
+        self._patch_auth()
+        resp = self.client.post('/api/subscribe', {'plan': 'monthly'},
+                                content_type='application/json', **AUTH)
         self.assertFalse(resp.json()['discounted'])
-        tx = Transaction.objects.filter(uid=UID, status='pending').get()
+        tx = Transaction.objects.get(uid=UID)
         self.assertEqual(tx.amount, 1900)
         self.assertEqual(_m.call_args.kwargs['amount'], 1900)
 
@@ -120,6 +132,68 @@ class PricingPromoTests(TestCase):
         tx = Transaction.objects.get(uid=UID)
         self.assertEqual(tx.amount, 15000)
         self.assertEqual(_m.call_args.kwargs['amount'], 15000)
+
+    # --- apply-promo (ajout d'un code depuis la page d'abonnement) --------
+    def test_apply_promo_creates_referral_and_returns_discount(self):
+        self._make_promo()
+        self._patch_auth()
+        resp = self.client.post('/api/apply-promo', {'promo_code': 'awa2026'},
+                                content_type='application/json', **AUTH)
+        self.assertEqual(resp.status_code, 200)
+        promo = resp.json()['promo']
+        self.assertTrue(promo['referred'])
+        self.assertFalse(promo['can_apply_promo'])
+        self.assertEqual(promo['discount_months_left'], 3)
+        self.assertEqual(promo['prices']['monthly']['final'], 950)
+        self.assertTrue(Referral.objects.filter(referred_uid=UID).exists())
+
+    def test_apply_promo_conflict_if_already_referred(self):
+        self._add_referral()
+        self._patch_auth()
+        resp = self.client.post('/api/apply-promo', {'promo_code': 'AWA2026'},
+                                content_type='application/json', **AUTH)
+        self.assertEqual(resp.status_code, 409)
+
+    def test_apply_promo_invalid_code(self):
+        self._patch_auth()
+        resp = self.client.post('/api/apply-promo', {'promo_code': 'NOPE'},
+                                content_type='application/json', **AUTH)
+        self.assertEqual(resp.status_code, 400)
+
+    def test_me_exposes_promo_state_for_non_referred(self):
+        self._patch_auth()
+        self._patch_entitlement()
+        resp = self.client.get('/api/me', **AUTH)
+        promo = resp.json()['promo']
+        self.assertFalse(promo['referred'])
+        self.assertTrue(promo['can_apply_promo'])
+        self.assertFalse(promo['prices']['monthly']['discounted'])
+
+    # --- webhook : décompte des mois remisés ------------------------------
+    @patch('billing.fedapay.verify_webhook_signature', return_value=True)
+    def test_webhook_paid_monthly_decrements_discount_months(self, _sig):
+        self._patch_entitlement()
+        ref = self._add_referral(months_left=3)
+        tx = Transaction.objects.create(uid=UID, email=EMAIL, plan='monthly',
+                                        amount=950, discounted=True, fedapay_id='fp1')
+        event = {'entity': {'id': 'fp1', 'status': 'approved'}}
+        resp = self.client.post('/api/webhook/fedapay', event,
+                                content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        ref.refresh_from_db()
+        self.assertEqual(ref.discount_months_left, 2)
+
+    @patch('billing.fedapay.verify_webhook_signature', return_value=True)
+    def test_webhook_paid_yearly_zeroes_discount_months(self, _sig):
+        self._patch_entitlement()
+        ref = self._add_referral(months_left=3)
+        Transaction.objects.create(uid=UID, email=EMAIL, plan='yearly',
+                                   amount=12150, discounted=True, fedapay_id='fp2')
+        event = {'entity': {'id': 'fp2', 'status': 'approved'}}
+        self.client.post('/api/webhook/fedapay', event,
+                         content_type='application/json')
+        ref.refresh_from_db()
+        self.assertEqual(ref.discount_months_left, 0)
 
 
 class BackfillEntitlementsTests(TestCase):

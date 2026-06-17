@@ -4,6 +4,7 @@ from . import promoter_api
 
 urlpatterns = [
     path('signup', views.signup),
+    path('apply-promo', views.apply_promo),
     path('subscribe', views.subscribe),
     path('webhook/fedapay', views.webhook),
     path('me', views.me),

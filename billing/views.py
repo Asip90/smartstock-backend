@@ -29,6 +29,48 @@ def _body(request):
         return {}
 
 
+def _discounted_amount(plan, ref):
+    """Montant à payer pour ce plan compte tenu de la remise filleul restante.
+
+    Offre « 3 premiers mois » à -50% :
+    - mensuel : -50% tant qu'il reste des mois remisés ;
+    - annuel : réduction unique = (mois restants) x (mensuel // 2), pour offrir
+      la même valeur cadeau sans brader une demi-année.
+    Retourne (montant, remise_appliquee).
+    """
+    base = settings.PRICE_MONTHLY if plan == 'monthly' else settings.PRICE_YEARLY
+    left = ref.discount_months_left if ref else 0
+    if not ref or left <= 0:
+        return base, False
+    if plan == 'monthly':
+        return base // 2, True
+    reduction = left * (settings.PRICE_MONTHLY // 2)
+    return max(0, base - reduction), True
+
+
+def _promo_state(uid):
+    """État du code promo pour l'app (page d'abonnement) : éligibilité au champ,
+    avantage en cours, et prix normaux/remisés des deux plans."""
+    ref = Referral.objects.filter(referred_uid=uid).first()
+    monthly_final, monthly_disc = _discounted_amount('monthly', ref)
+    yearly_final, yearly_disc = _discounted_amount('yearly', ref)
+    return {
+        'referred': bool(ref),
+        # Le champ « ajouter un code » n'apparaît que pour qui n'a pas encore de code.
+        'can_apply_promo': not ref,
+        'promo_code': ref.promo_code.code if ref else '',
+        'influencer_name': ref.promo_code.influencer_name if ref else '',
+        'discount_months_left': ref.discount_months_left if ref else 0,
+        'discount_active': monthly_disc or yearly_disc,
+        'prices': {
+            'monthly': {'normal': settings.PRICE_MONTHLY, 'final': monthly_final,
+                        'discounted': monthly_disc},
+            'yearly': {'normal': settings.PRICE_YEARLY, 'final': yearly_final,
+                       'discounted': yearly_disc},
+        },
+    }
+
+
 @csrf_exempt
 def signup(request):
     """Initialise l'essai. {promo_code?}. Essai = 30 jours ; le code ne l'allonge plus.
@@ -77,6 +119,38 @@ def signup(request):
 
 
 @csrf_exempt
+def apply_promo(request):
+    """Attache un code promo à un compte qui n'en a pas encore (depuis la page
+    d'abonnement). Ouvre droit à -50% sur les 3 premiers mois. {promo_code}.
+
+    Un seul code par compte à vie : si un code est déjà lié, on refuse.
+    """
+    if request.method != 'POST':
+        return HttpResponseBadRequest('POST requis')
+    uid, email = _auth(request)
+    if not uid:
+        return JsonResponse({'error': 'unauthorized'}, status=401)
+
+    if Referral.objects.filter(referred_uid=uid).exists():
+        return JsonResponse({'error': 'code_promo_deja_utilise'}, status=409)
+
+    code = (_body(request).get('promo_code') or '').strip()
+    if not code:
+        return JsonResponse({'error': 'code_promo_requis'}, status=400)
+    promo = PromoCode.objects.filter(code__iexact=code, active=True).first()
+    if not promo:
+        return JsonResponse({'error': 'code_promo_invalide'}, status=400)
+
+    Referral.objects.create(
+        promo_code=promo,
+        referred_uid=uid,
+        referred_email=email,
+        first_year_end=timezone.now() + timedelta(days=365),
+    )
+    return JsonResponse({'status': 'ok', 'promo': _promo_state(uid)})
+
+
+@csrf_exempt
 def subscribe(request):
     """Crée une transaction FedaPay et renvoie l'URL de checkout. {plan: monthly|yearly}."""
     if request.method != 'POST':
@@ -88,16 +162,12 @@ def subscribe(request):
     plan = _body(request).get('plan', 'monthly')
     if plan not in ('monthly', 'yearly'):
         return JsonResponse({'error': 'plan_invalide'}, status=400)
-    amount = settings.PRICE_MONTHLY if plan == 'monthly' else settings.PRICE_YEARLY
+    # Remise filleul : -50% sur les 3 premiers mois (cf. _discounted_amount).
+    ref = Referral.objects.filter(referred_uid=uid).first()
+    amount, discounted = _discounted_amount(plan, ref)
 
-    # -50% sur le PREMIER paiement d'un filleul parrainé (jamais payé encore).
-    referred = Referral.objects.filter(referred_uid=uid).exists()
-    already_paid = Transaction.objects.filter(uid=uid, status='paid').exists()
-    discounted = referred and not already_paid
-    if discounted:
-        amount = amount // 2
-
-    tx = Transaction.objects.create(uid=uid, email=email, plan=plan, amount=amount)
+    tx = Transaction.objects.create(uid=uid, email=email, plan=plan, amount=amount,
+                                    discounted=discounted)
     try:
         # Après paiement, FedaPay redirige vers cette page : l'app détecte l'URL
         # « /paiement/ok » dans la WebView pour la fermer automatiquement.
@@ -159,6 +229,12 @@ def webhook(request):
                 referral=ref, transaction=tx, amount=tx.amount * pct // 100,
             )
 
+        # Décompte des mois remisés restants (offre « 3 premiers mois »).
+        if ref and tx.discounted and ref.discount_months_left > 0:
+            ref.discount_months_left = (
+                0 if tx.plan == 'yearly' else ref.discount_months_left - 1)
+            ref.save(update_fields=['discount_months_left'])
+
     return JsonResponse({'status': 'ok'})
 
 
@@ -167,7 +243,10 @@ def me(request):
     uid, _ = _auth(request)
     if not uid:
         return JsonResponse({'error': 'unauthorized'}, status=401)
-    return JsonResponse({'entitlement': fb.get_entitlement(uid) or {'plan': 'free'}})
+    return JsonResponse({
+        'entitlement': fb.get_entitlement(uid) or {'plan': 'free'},
+        'promo': _promo_state(uid),
+    })
 
 
 @csrf_exempt

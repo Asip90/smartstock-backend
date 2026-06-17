@@ -56,6 +56,9 @@ class Referral(models.Model):
     referred_email = models.EmailField(blank=True)
     signed_up_at = models.DateTimeField(auto_now_add=True)
     first_year_end = models.DateTimeField()
+    # Mois restants à -50% (offre « 3 premiers mois »). Décrémenté à chaque
+    # paiement mensuel remisé ; mis à 0 par un paiement annuel remisé.
+    discount_months_left = models.PositiveIntegerField(default=3)
 
     def save(self, *args, **kwargs):
         if not self.first_year_end:
@@ -74,6 +77,7 @@ class Transaction(models.Model):
     email = models.EmailField(blank=True)
     plan = models.CharField(max_length=10, choices=PLAN_CHOICES)
     amount = models.PositiveIntegerField()  # FCFA
+    discounted = models.BooleanField(default=False)  # payé avec remise code promo
     fedapay_id = models.CharField(max_length=64, blank=True, db_index=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
