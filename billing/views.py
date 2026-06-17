@@ -104,7 +104,7 @@ def subscribe(request):
         callback_url = request.build_absolute_uri('/paiement/ok')
         checkout = fedapay.create_checkout(
             amount=amount,
-            description=f'Abonnement SmartStock ({plan})',
+            description=f'Abonnement Compa ({plan})',
             customer_email=email,
             callback_url=callback_url,
         )

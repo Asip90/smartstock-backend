@@ -11,7 +11,7 @@ _UPDATED = "30 mai 2026"
 LEGAL_DOCS = {
     'confidentialite': {
         'title': 'Politique de confidentialité',
-        'intro': "SmartStock attache une grande importance à la protection de vos données. "
+        'intro': "Compa attache une grande importance à la protection de vos données. "
                  "Cette politique explique quelles données sont collectées, pourquoi, et comment elles sont protégées.",
         'sections': [
             ("1. Données collectées",
@@ -36,10 +36,10 @@ LEGAL_DOCS = {
     },
     'conditions': {
         'title': "Conditions d'utilisation",
-        'intro': "En utilisant SmartStock, vous acceptez les présentes conditions. Veuillez les lire attentivement.",
+        'intro': "En utilisant Compa, vous acceptez les présentes conditions. Veuillez les lire attentivement.",
         'sections': [
             ("1. Objet du service",
-             "SmartStock est une application de gestion de stock et de ventes destinée aux commerçants. "
+             "Compa est une application de gestion de stock et de ventes destinée aux commerçants. "
              "Elle vous permet de gérer vos produits, vos ventes, vos réapprovisionnements et vos statistiques."),
             ("2. Compte utilisateur",
              "Vous êtes responsable de la confidentialité de vos identifiants et de toutes les activités "
@@ -52,7 +52,7 @@ LEGAL_DOCS = {
              "manuel : vous êtes notifié à l'échéance et choisissez de renouveler. À la fin d'une période payée "
              "sans renouvellement, le compte revient au plan gratuit."),
             ("5. Responsabilité",
-             "SmartStock est un outil d'aide à la gestion. Vous restez seul responsable de l'exactitude "
+             "Compa est un outil d'aide à la gestion. Vous restez seul responsable de l'exactitude "
              "des données saisies et des décisions commerciales prises sur cette base. Le service est "
              "fourni « en l'état », sans garantie de disponibilité permanente."),
             ("6. Modifications et résiliation",
@@ -62,10 +62,10 @@ LEGAL_DOCS = {
     },
     'mentions-legales': {
         'title': 'Mentions légales',
-        'intro': "Informations relatives à l'éditeur et à l'hébergement de l'application SmartStock.",
+        'intro': "Informations relatives à l'éditeur et à l'hébergement de l'application Compa.",
         'sections': [
             ("Éditeur",
-             "L'application SmartStock est éditée par son propriétaire. Pour toute question : " + _SUPPORT),
+             "L'application Compa est éditée par son propriétaire. Pour toute question : " + _SUPPORT),
             ("Hébergement",
              "Les données et services sont hébergés par Google Firebase (Google LLC) et les médias par "
              "Cloudinary. Ces prestataires assurent la disponibilité et la sécurité de l'infrastructure."),
@@ -96,7 +96,7 @@ def download_apk(request):
     return FileResponse(
         open(apk_path, 'rb'),
         as_attachment=True,
-        filename='SmartStock.apk',
+        filename='Compa.apk',
         content_type='application/vnd.android.package-archive',
     )
 
@@ -115,7 +115,7 @@ text-align:center}.check{width:72px;height:72px;border-radius:50%;background:#16
 display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 16px}
 h1{font-size:20px;margin:0 0 8px}p{color:#475569;font-size:14px;line-height:1.5}</style></head>
 <body><div class="card"><div class="check">&#10003;</div>
-<h1>Paiement reçu</h1><p>Votre abonnement SmartStock Pro est en cours d'activation.
+<h1>Paiement reçu</h1><p>Votre abonnement Compa Pro est en cours d'activation.
 Vous pouvez revenir à l'application.</p></div></body></html>"""
     return HttpResponse(html)
 

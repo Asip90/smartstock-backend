@@ -94,7 +94,7 @@ class AppConfig(models.Model):
                   "(dialogue bloquant). Mettre = latest_build pour forcer tout le monde.")
     message = models.CharField(
         max_length=255, blank=True,
-        default="Une nouvelle version de SmartStock est disponible.")
+        default="Une nouvelle version de Compa est disponible.")
     store_url = models.CharField(
         max_length=300, blank=True,
         default="https://smartstock.nouyon.site/telecharger")
@@ -137,7 +137,7 @@ class AIConfig(models.Model):
     PROVIDER_CHOICES = [('mistral', 'Mistral'), ('openrouter', 'OpenRouter')]
 
     DEFAULT_PERSONA = (
-        "Tu es l'assistant de SmartStock, une appli de gestion de stock et de "
+        "Tu es l'assistant de Compa, une appli de gestion de stock et de "
         "caisse pour commerçants en Afrique de l'Ouest. Tu rédiges de courtes "
         "notifications en français, naturelles et chaleureuses mais toujours "
         "professionnelles, jamais robotiques. Va droit au but, en 2 phrases "

@@ -27,7 +27,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--confirm', action='store_true',
             help="Envoie réellement les notifications (sinon dry-run).")
-        parser.add_argument('--title', default="Mise à jour SmartStock")
+        parser.add_argument('--title', default="Mise à jour Compa")
         parser.add_argument('--body', default=None)
 
     def handle(self, *args, **options):
@@ -35,7 +35,7 @@ class Command(BaseCommand):
         cfg = AppConfig.objects.first()
         store_url = (getattr(cfg, 'store_url', '') or DEFAULT_URL)
         message = (getattr(cfg, 'message', '')
-                   or "Une nouvelle version de SmartStock est disponible.")
+                   or "Une nouvelle version de Compa est disponible.")
         title = options['title']
         body = options['body'] or message
 

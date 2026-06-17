@@ -109,11 +109,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # ── Admin (Jazzmin) ──────────────────────────────────────────────────────────
 JAZZMIN_SETTINGS = {
-    'site_title': 'SmartStock Admin',
-    'site_header': 'SmartStock',
-    'site_brand': 'SmartStock',
-    'welcome_sign': 'Espace administration SmartStock',
-    'copyright': 'SmartStock',
+    'site_title': 'Compa Admin',
+    'site_header': 'Compa',
+    'site_brand': 'Compa',
+    'welcome_sign': 'Espace administration Compa',
+    'copyright': 'Compa',
     'search_model': ['billing.PromoCode', 'billing.WithdrawalRequest'],
     'topmenu_links': [
         {'name': 'Site', 'url': '/', 'new_window': True},
