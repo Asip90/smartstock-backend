@@ -31,7 +31,7 @@ def _body(request):
 
 @csrf_exempt
 def signup(request):
-    """Initialise l'essai. {promo_code?}. Essai = 14 jours ; le code ne l'allonge plus.
+    """Initialise l'essai. {promo_code?}. Essai = 30 jours ; le code ne l'allonge plus.
 
     Un utilisateur ne peut bénéficier de l'essai et d'un code promo qu'UNE SEULE
     FOIS à vie : tout appel ultérieur est rejeté (évite qu'on régénère un code à
@@ -57,7 +57,7 @@ def signup(request):
             return JsonResponse({'error': 'essai_deja_utilise'}, status=409)
         return JsonResponse({'status': existing.get('status', 'free'), 'already': True})
 
-    trial_days = 14  # essai unique de 14 jours, le code ne l'allonge plus
+    trial_days = 30  # essai unique de 30 jours (1 mois), le code ne l'allonge plus
     if code:
         promo = PromoCode.objects.filter(code__iexact=code, active=True).first()
         if not promo:

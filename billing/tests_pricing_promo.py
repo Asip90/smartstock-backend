@@ -38,21 +38,21 @@ class PricingPromoTests(TestCase):
         return PromoCode.objects.create(code=code, influencer_name='Awa', trial_days=45)
 
     # --- signup ----------------------------------------------------------
-    def test_signup_without_code_trial_14(self):
+    def test_signup_without_code_trial_30(self):
         self._patch_auth()
         self._patch_entitlement()
         resp = self.client.post('/api/signup', {}, content_type='application/json', **AUTH)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()['trial_days'], 14)
+        self.assertEqual(resp.json()['trial_days'], 30)
 
-    def test_signup_with_code_trial_14_and_referral_created(self):
+    def test_signup_with_code_trial_30_and_referral_created(self):
         self._make_promo()
         self._patch_auth()
         self._patch_entitlement()
         resp = self.client.post('/api/signup', {'promo_code': 'awa2026'},
                                 content_type='application/json', **AUTH)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()['trial_days'], 14)
+        self.assertEqual(resp.json()['trial_days'], 30)
         self.assertTrue(Referral.objects.filter(referred_uid=UID).exists())
 
     def test_second_signup_with_code_conflicts(self):
