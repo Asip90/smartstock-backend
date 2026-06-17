@@ -16,7 +16,7 @@ from django.core.management.base import BaseCommand
 from billing import firebase_service as fb
 from billing.models import AppConfig
 
-DEFAULT_URL = 'https://smartstock.nouyon.site/telecharger'
+DEFAULT_URL = 'https://compa.nouyon.site/telecharger'
 FCM_MULTICAST_LIMIT = 500
 
 

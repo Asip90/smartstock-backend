@@ -101,7 +101,7 @@ class AppConfig(models.Model):
         default="Une nouvelle version de Compa est disponible.")
     store_url = models.CharField(
         max_length=300, blank=True,
-        default="https://smartstock.nouyon.site/telecharger")
+        default="https://compa.nouyon.site/telecharger")
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
