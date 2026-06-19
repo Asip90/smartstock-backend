@@ -7,9 +7,15 @@ périodiques sont donc des **commandes Django** lancées par **cron** sur le VPS
 
 | Commande | Rôle | Horaire conseillé |
 |---|---|---|
-| `send_stock_alerts` | Alerte stock critique (par boutique) | 07:00 |
-| `expire_subscriptions` | Bascule `status→expired` + rappels J-3/J-1/J0 | 09:00 |
-| `send_daily_summary` | Bilan des ventes du jour | 20:30 |
+| `send_morning_briefing` | Briefing matin (ventes d'hier + ruptures + dettes) | 07:00 (tous les jours) |
+| `expire_subscriptions` | Bascule `status→expired` + rappels J-3/J-1/J0 | 09:00 (tous les jours) |
+| `send_daily_summary` | Bilan des ventes du jour | 20:30 (tous les jours) |
+| `send_weekly_recap --commit` | Bilan hebdo (CA semaine vs précédente) | 20:00 (dimanche) |
+
+> `send_morning_briefing` **remplace** l'ancien `send_stock_alerts` au cron : le
+> briefing inclut déjà les ruptures de stock. La commande `send_stock_alerts`
+> reste disponible pour un appel manuel mais n'est plus planifiée.
+> `send_weekly_recap` exige `--commit` (sans lui : dry-run, rien n'est envoyé).
 
 Installation :
 
@@ -29,9 +35,11 @@ soient ces toggles.
 Test manuel (sans attendre l'heure du cron) :
 
 ```bash
-.venv/bin/python manage.py send_stock_alerts
+.venv/bin/python manage.py send_morning_briefing
 .venv/bin/python manage.py expire_subscriptions
 .venv/bin/python manage.py send_daily_summary
+.venv/bin/python manage.py send_weekly_recap          # dry-run (affiche sans envoyer)
+.venv/bin/python manage.py send_weekly_recap --commit # envoie réellement
 ```
 
 > `notif_new_sale` (toggle « nouvelle vente ») n'a **pas** d'émetteur : une notif

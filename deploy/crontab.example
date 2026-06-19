@@ -12,11 +12,16 @@
 # décommenter et adapter :
 # TZ=Africa/Porto-Novo
 
-# Alerte de stock critique — tous les jours à 07:00
-0 7 * * * /var/www/smartstock/deploy/run_cron.sh send_stock_alerts >> /var/log/smartstock-cron.log 2>&1
+# Briefing du matin (ventes d'hier + ruptures de stock + dettes) — tous les jours à 07:00.
+# Remplace l'ancien send_stock_alerts : le briefing inclut déjà les ruptures de stock.
+0 7 * * * /var/www/smartstock/deploy/run_cron.sh send_morning_briefing >> /var/log/smartstock-cron.log 2>&1
 
 # Expiration des abonnements + rappels J-3 / J-1 / J0 — tous les jours à 09:00
 0 9 * * * /var/www/smartstock/deploy/run_cron.sh expire_subscriptions >> /var/log/smartstock-cron.log 2>&1
 
 # Résumé quotidien des ventes — tous les jours à 20:30
 30 20 * * * /var/www/smartstock/deploy/run_cron.sh send_daily_summary >> /var/log/smartstock-cron.log 2>&1
+
+# Bilan hebdomadaire (CA semaine vs précédente) — dimanche à 20:00.
+# --commit est requis : sans lui, la commande tourne à blanc (dry-run) sans envoyer.
+0 20 * * 0 /var/www/smartstock/deploy/run_cron.sh send_weekly_recap --commit >> /var/log/smartstock-cron.log 2>&1
