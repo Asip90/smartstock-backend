@@ -104,6 +104,8 @@ def signup(request):
         promo = PromoCode.objects.filter(code__iexact=code, active=True).first()
         if not promo:
             return JsonResponse({'error': 'code_promo_invalide'}, status=400)
+        if _is_self_referral(promo, uid, email):
+            return JsonResponse({'error': 'auto_parrainage_interdit'}, status=400)
         # 1 seul parrainage par filleul (referred_uid est unique en base).
         Referral.objects.create(
             promo_code=promo,
@@ -140,6 +142,8 @@ def apply_promo(request):
     promo = PromoCode.objects.filter(code__iexact=code, active=True).first()
     if not promo:
         return JsonResponse({'error': 'code_promo_invalide'}, status=400)
+    if _is_self_referral(promo, uid, email):
+        return JsonResponse({'error': 'auto_parrainage_interdit'}, status=400)
 
     Referral.objects.create(
         promo_code=promo,
@@ -189,6 +193,58 @@ def subscribe(request):
                          'transaction_id': tx.id, 'discounted': discounted})
 
 
+def _is_self_referral(promo, uid, email):
+    """Vrai si l'utilisateur (uid/email) est le propriétaire du code promo :
+    on interdit l'auto-parrainage (toucher une commission sur son propre
+    abonnement, et s'auto-octroyer la remise filleul)."""
+    if promo.firebase_uid and promo.firebase_uid == uid:
+        return True
+    owner = promo.owner
+    if owner and email and owner.email and owner.email.lower() == email.lower():
+        return True
+    return False
+
+
+FEDAPAY_PAID_STATUSES = ('approved', 'paid', 'completed')
+
+
+def _apply_paid_transaction(tx):
+    """Confirme une transaction payée : prolonge l'abonnement, crée la commission
+    et décompte la remise. Source de vérité unique appelée par le webhook,
+    l'endpoint /api/confirm et la commande de réconciliation.
+
+    Idempotente : ne fait rien (retourne False) si la transaction est déjà payée.
+    """
+    if tx.status == 'paid':
+        return False
+    tx.status = 'paid'
+    tx.paid_at = timezone.now()
+    tx.save(update_fields=['status', 'paid_at'])
+
+    # Prolonge l'entitlement. On repart de maintenant (renouvellement manuel,
+    # pas de chevauchement critique).
+    days = 365 if tx.plan == 'yearly' else 30
+    new_end = timezone.now() + timedelta(days=days)
+    fb.set_entitlement(tx.uid, plan='pro', status='active', current_period_end=new_end)
+
+    # Commission influenceur : commission_pct % si le filleul est dans sa 1re année.
+    # Pas de commission sur un auto-parrainage (le promoteur ne se paie pas lui-même).
+    ref = Referral.objects.filter(referred_uid=tx.uid).first()
+    if (ref and ref.is_within_first_year() and not hasattr(tx, 'commission')
+            and not _is_self_referral(ref.promo_code, tx.uid, tx.email)):
+        pct = ref.promo_code.commission_pct
+        Commission.objects.create(
+            referral=ref, transaction=tx, amount=tx.amount * pct // 100,
+        )
+
+    # Décompte des mois remisés restants (offre « 3 premiers mois »).
+    if ref and tx.discounted and ref.discount_months_left > 0:
+        ref.discount_months_left = (
+            0 if tx.plan == 'yearly' else ref.discount_months_left - 1)
+        ref.save(update_fields=['discount_months_left'])
+    return True
+
+
 @csrf_exempt
 def webhook(request):
     """Webhook FedaPay : confirme le paiement, prolonge l'abonnement, crée la commission."""
@@ -207,35 +263,47 @@ def webhook(request):
     if not tx:
         return JsonResponse({'status': 'ignored'})
 
-    if status in ('approved', 'paid', 'completed') and tx.status != 'paid':
-        tx.status = 'paid'
-        tx.paid_at = timezone.now()
-        tx.save()
-
-        # Prolonge l'entitlement.
-        days = 365 if tx.plan == 'yearly' else 30
-        current = fb.get_entitlement(tx.uid) or {}
-        base = timezone.now()
-        # NB : current['currentPeriodEnd'] est un Timestamp Firestore ; on repart de
-        # maintenant pour rester simple (renouvellement manuel, pas de chevauchement critique).
-        new_end = base + timedelta(days=days)
-        fb.set_entitlement(tx.uid, plan='pro', status='active', current_period_end=new_end)
-
-        # Commission influenceur : 25% si le filleul est dans sa 1re année.
-        ref = Referral.objects.filter(referred_uid=tx.uid).first()
-        if ref and ref.is_within_first_year() and not hasattr(tx, 'commission'):
-            pct = ref.promo_code.commission_pct
-            Commission.objects.create(
-                referral=ref, transaction=tx, amount=tx.amount * pct // 100,
-            )
-
-        # Décompte des mois remisés restants (offre « 3 premiers mois »).
-        if ref and tx.discounted and ref.discount_months_left > 0:
-            ref.discount_months_left = (
-                0 if tx.plan == 'yearly' else ref.discount_months_left - 1)
-            ref.save(update_fields=['discount_months_left'])
+    if status in FEDAPAY_PAID_STATUSES:
+        _apply_paid_transaction(tx)
 
     return JsonResponse({'status': 'ok'})
+
+
+@csrf_exempt
+def confirm(request):
+    """Confirmation de paiement initiée par l'app (filet de sécurité si le webhook
+    FedaPay n'a pas été reçu). L'app appelle cet endpoint au retour de la WebView
+    de paiement avec l'`transaction_id`. Le backend interroge FedaPay et, si la
+    transaction est approuvée, applique la confirmation (idempotente)."""
+    if request.method != 'POST':
+        return HttpResponseBadRequest('POST requis')
+    uid, _ = _auth(request)
+    if not uid:
+        return JsonResponse({'error': 'unauthorized'}, status=401)
+
+    data = _body(request)
+    tx = None
+    tx_id = data.get('transaction_id')
+    if tx_id:
+        tx = Transaction.objects.filter(id=tx_id, uid=uid).first()
+    if tx is None and data.get('fedapay_id'):
+        tx = Transaction.objects.filter(
+            fedapay_id=str(data['fedapay_id']), uid=uid).first()
+    if tx is None:
+        return JsonResponse({'error': 'transaction_introuvable'}, status=404)
+
+    if tx.status != 'paid' and tx.fedapay_id:
+        try:
+            status = fedapay.get_transaction_status(tx.fedapay_id)
+        except Exception:
+            status = None
+        if status in FEDAPAY_PAID_STATUSES:
+            _apply_paid_transaction(tx)
+
+    return JsonResponse({
+        'status': tx.status,
+        'entitlement': fb.get_entitlement(uid) or {'plan': 'free'},
+    })
 
 
 @csrf_exempt

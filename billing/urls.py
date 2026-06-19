@@ -6,6 +6,7 @@ urlpatterns = [
     path('signup', views.signup),
     path('apply-promo', views.apply_promo),
     path('subscribe', views.subscribe),
+    path('confirm', views.confirm),
     path('webhook/fedapay', views.webhook),
     path('me', views.me),
     path('crash', views.crash),

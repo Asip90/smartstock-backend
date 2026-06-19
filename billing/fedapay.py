@@ -61,6 +61,21 @@ def create_checkout(*, amount: int, description: str, customer_email: str,
     }
 
 
+def get_transaction_status(fedapay_id: str) -> str:
+    """Statut réel d'une transaction chez FedaPay (en minuscules).
+
+    Sert de source de vérité quand le webhook n'a pas été reçu (endpoint
+    /api/confirm, commande reconcile_fedapay). Retourne '' si introuvable.
+    """
+    base = _base_url()
+    resp = requests.get(
+        f'{base}/v1/transactions/{fedapay_id}', headers=_headers(), timeout=20)
+    resp.raise_for_status()
+    data = resp.json()
+    tx = data.get('v1/transaction') or data.get('transaction') or {}
+    return (tx.get('status') or '').lower()
+
+
 def verify_webhook_signature(payload: bytes, signature: str) -> bool:
     """Vérifie la signature HMAC du webhook (header X-FEDAPAY-SIGNATURE)."""
     secret = settings.FEDAPAY_WEBHOOK_SECRET
