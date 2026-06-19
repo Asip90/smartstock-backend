@@ -99,8 +99,11 @@ FEDAPAY_ENV = os.environ.get('FEDAPAY_ENV', 'sandbox')
 FEDAPAY_WEBHOOK_SECRET = os.environ.get('FEDAPAY_WEBHOOK_SECRET', '')
 FIREBASE_SERVICE_ACCOUNT_JSON = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON', '')
 
-PRICE_MONTHLY = int(os.environ.get('PRICE_MONTHLY', '900'))
-PRICE_YEARLY = int(os.environ.get('PRICE_YEARLY', '9000'))
+# Tarifs Pro alignés sur la solution (app : subscription_page _monthlyFallback /
+# _yearlyFallback). Surchargeables via l'env, mais le défaut DOIT rester la
+# valeur réelle : sinon landing ET montant FedaPay seraient faux sans .env.
+PRICE_MONTHLY = int(os.environ.get('PRICE_MONTHLY', '1900'))
+PRICE_YEARLY = int(os.environ.get('PRICE_YEARLY', '15000'))
 
 # Lien de téléchargement de l'app. Par défaut : APK servi par le backend
 # (/telecharger). Surchargeable via l'env (ex. lien Play Store plus tard).

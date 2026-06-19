@@ -1,0 +1,22 @@
+# Tâches planifiées SmartStock — remplacent les Cloud Functions (plan Firebase gratuit).
+#
+# Installation sur le VPS :
+#   1. Adapter le chemin ABSOLU /var/www/smartstock ci-dessous.
+#   2. Vérifier qu'un fichier .env existe à la racine du projet (clés Firebase + FedaPay).
+#   3. chmod +x deploy/run_cron.sh
+#   4. crontab deploy/crontab.example       # remplace le crontab de l'utilisateur
+#      (ou `crontab -e` puis coller les lignes pour conserver d'autres tâches)
+#   5. Contrôler : crontab -l   |   Logs : /var/log/smartstock-cron.log
+#
+# Le fuseau horaire suit l'horloge système du serveur. Pour forcer l'heure locale,
+# décommenter et adapter :
+# TZ=Africa/Porto-Novo
+
+# Alerte de stock critique — tous les jours à 07:00
+0 7 * * * /var/www/smartstock/deploy/run_cron.sh send_stock_alerts >> /var/log/smartstock-cron.log 2>&1
+
+# Expiration des abonnements + rappels J-3 / J-1 / J0 — tous les jours à 09:00
+0 9 * * * /var/www/smartstock/deploy/run_cron.sh expire_subscriptions >> /var/log/smartstock-cron.log 2>&1
+
+# Résumé quotidien des ventes — tous les jours à 20:30
+30 20 * * * /var/www/smartstock/deploy/run_cron.sh send_daily_summary >> /var/log/smartstock-cron.log 2>&1
