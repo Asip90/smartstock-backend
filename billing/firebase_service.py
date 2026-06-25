@@ -120,6 +120,17 @@ def send_push(tokens, title: str, body: str, data: dict | None = None):
     return resp.success_count
 
 
+def mirror_pro_to_shops(owner_uid: str, current_period_end):
+    """Écrit `proUntil` (= current_period_end, ou None) sur toutes les boutiques
+    possédées par owner_uid, afin que les cogérants invités héritent (ou perdent)
+    l'accès Pro côté serveur, indépendamment de l'app du propriétaire. Source de
+    vérité serveur du Pro de boutique."""
+    _ensure_init()
+    for doc in _db.collection('shops').where('ownerId', '==', owner_uid).stream():
+        _db.collection('shops').document(doc.id).set(
+            {'proUntil': current_period_end}, merge=True)
+
+
 def set_app_config(*, latest_build: int, min_build: int, message: str, store_url: str):
     """Écrit la config de mise à jour de l'app mobile dans Firestore `config/app`.
     L'app lit ce doc au démarrage : `latest_build` > build courant -> MAJ proposée ;

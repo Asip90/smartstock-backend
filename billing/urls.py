@@ -10,6 +10,7 @@ urlpatterns = [
     path('webhook/fedapay', views.webhook),
     path('me', views.me),
     path('crash', views.crash),
+    path('notify-owner', views.notify_owner),
     path('promoter/me', promoter_api.promoter_me),
     path('promoter/code', promoter_api.promoter_create_code),
     path('promoter/dashboard', promoter_api.promoter_dashboard),

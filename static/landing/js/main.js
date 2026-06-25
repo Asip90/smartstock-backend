@@ -46,4 +46,47 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('mouseup', () => btn.style.transform = '');
         btn.addEventListener('mouseleave', () => btn.style.transform = '');
     });
+
+    // 5. PARCOURS iPhone : l'APK Android n'est pas installable sur iOS.
+    // Sur iOS, les boutons « Télécharger » ouvrent une modale qui oriente vers la
+    // PWA (app web) + explique l'ajout à l'écran d'accueil.
+    const cfg = window.COMPA || {};
+    const ua = window.navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/i.test(ua) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    const modal = document.getElementById('iosInstallModal');
+    if (isIOS && modal && cfg.downloadUrl) {
+        const openModal = () => {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        };
+        const closeModal = () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+        };
+
+        // Intercepte tous les liens de téléchargement de l'APK.
+        document.querySelectorAll('a').forEach(a => {
+            if (a.getAttribute('href') === cfg.downloadUrl) {
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal();
+                });
+            }
+        });
+
+        const closeBtn = document.getElementById('iosInstallClose');
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        // L'ouverture de la PWA referme la modale.
+        const openAppBtn = document.getElementById('iosInstallOpen');
+        if (openAppBtn) openAppBtn.addEventListener('click', closeModal);
+        // Clic sur le fond + touche Échap.
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+        });
+    }
 });

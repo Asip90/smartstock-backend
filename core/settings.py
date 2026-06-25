@@ -108,6 +108,12 @@ PRICE_YEARLY = int(os.environ.get('PRICE_YEARLY', '15000'))
 # Lien de téléchargement de l'app. Par défaut : APK servi par le backend
 # (/telecharger). Surchargeable via l'env (ex. lien Play Store plus tard).
 APP_DOWNLOAD_URL = os.environ.get('APP_DOWNLOAD_URL', '/telecharger')
+
+# URL de la PWA (app web installable). Sur iPhone, l'APK Android est inutilisable :
+# la landing redirige les utilisateurs iOS vers cette PWA et leur explique comment
+# l'ajouter à l'écran d'accueil. Par défaut : Firebase Hosting du projet.
+# Surchargeable via l'env (ex. domaine personnalisé).
+APP_PWA_URL = os.environ.get('APP_PWA_URL', 'https://smartstock-1be69.web.app')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # ── Admin (Jazzmin) ──────────────────────────────────────────────────────────

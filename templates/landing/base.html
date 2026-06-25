@@ -151,6 +151,51 @@
         </div>
     </footer>
 
+    <!-- MODALE D'INSTALLATION iPhone (PWA) -->
+    <!-- Affichée uniquement sur iOS : l'APK Android n'y est pas installable, on
+         oriente l'utilisateur vers l'app web puis l'ajout à l'écran d'accueil. -->
+    <div id="iosInstallModal" class="fixed inset-0 z-[70] hidden items-end sm:items-center justify-center p-4 bg-deepNavy/50 backdrop-blur-sm">
+        <div class="w-full max-w-md bg-white rounded-sheet p-7 shadow-lift relative">
+            <button id="iosInstallClose" class="absolute top-4 right-4 p-1.5 text-textSecondary hover:text-deepNavy" aria-label="Fermer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div class="flex items-center gap-3 mb-5">
+                <img src="{% static 'landing/img/logo.png' %}" alt="Compa" class="w-11 h-11 rounded-card object-cover">
+                <div>
+                    <h3 class="text-lg font-extrabold text-deepNavy leading-tight">Installer Compa sur iPhone</h3>
+                    <p class="text-sm text-textSecondary">Pas d'App Store : ça s'installe en 2 étapes.</p>
+                </div>
+            </div>
+
+            <ol class="space-y-4 mb-6">
+                <li class="flex items-start gap-3">
+                    <span class="flex-none w-6 h-6 rounded-full bg-primaryBlue text-white text-sm font-bold flex items-center justify-center">1</span>
+                    <p class="text-sm text-bodyText leading-relaxed">Ouvrez l'app web Compa dans <strong class="text-deepNavy">Safari</strong> avec le bouton ci-dessous.</p>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="flex-none w-6 h-6 rounded-full bg-primaryBlue text-white text-sm font-bold flex items-center justify-center">2</span>
+                    <p class="text-sm text-bodyText leading-relaxed">
+                        Appuyez sur
+                        <svg class="inline w-4 h-4 -mt-0.5 text-primaryBlue" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L8 8m4-4l4 4"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6"/></svg>
+                        <strong class="text-deepNavy">Partager</strong>, puis
+                        <strong class="text-deepNavy">« Sur l'écran d'accueil »</strong>.
+                    </p>
+                </li>
+            </ol>
+
+            <a id="iosInstallOpen" href="{{ pwa_url }}" class="block text-center bg-primaryBlue text-white py-3.5 rounded-input font-semibold hover:bg-primaryBlueDark active:scale-[0.99] transition-all shadow-glow">
+                Ouvrir l'app web Compa
+            </a>
+            <p class="text-center text-xs text-textSecondary mt-3">Fonctionne aussi sur Android et ordinateur.</p>
+        </div>
+    </div>
+
+    <script>
+        window.COMPA = {
+            pwaUrl: "{{ pwa_url|escapejs }}",
+            downloadUrl: "{{ download_url|escapejs }}"
+        };
+    </script>
     <script src="{% static 'landing/js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>

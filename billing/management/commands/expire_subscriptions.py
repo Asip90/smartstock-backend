@@ -71,6 +71,10 @@ class Command(BaseCommand):
             # Déjà marqué expiré ET rappel "expired" déjà émis : on passe.
             # (on continue quand même à traiter pour le ré-armement post-renouvellement)
 
+            # Propage proUntil aux boutiques possédées (couvre expiration ET
+            # ré-armement post-renouvellement), même sans autre mise à jour.
+            fb.mirror_pro_to_shops(uid, period_end)
+
             days_left = (period_end - now).total_seconds() / 86400.0
             current_stage = data.get('expiryReminderStage') or ''
             target = _target_stage(days_left)

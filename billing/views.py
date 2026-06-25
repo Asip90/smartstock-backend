@@ -226,6 +226,7 @@ def _apply_paid_transaction(tx):
     days = 365 if tx.plan == 'yearly' else 30
     new_end = timezone.now() + timedelta(days=days)
     fb.set_entitlement(tx.uid, plan='pro', status='active', current_period_end=new_end)
+    fb.mirror_pro_to_shops(tx.uid, new_end)
 
     # Commission influenceur : commission_pct % si le filleul est dans sa 1re année.
     # Pas de commission sur un auto-parrainage (le promoteur ne se paie pas lui-même).
@@ -315,6 +316,44 @@ def me(request):
         'entitlement': fb.get_entitlement(uid) or {'plan': 'free'},
         'promo': _promo_state(uid),
     })
+
+
+@csrf_exempt
+def notify_owner(request):
+    """Un cogérant demande au propriétaire de renouveler l'abonnement Pro de la
+    boutique. {shopId}. L'appelant doit être membre actif de la boutique."""
+    if request.method != 'POST':
+        return HttpResponseBadRequest('POST requis')
+    uid, _ = _auth(request)
+    if not uid:
+        return JsonResponse({'error': 'unauthorized'}, status=401)
+
+    shop_id = _body(request).get('shopId')
+    if not shop_id:
+        return JsonResponse({'error': 'shopId_requis'}, status=400)
+
+    db = fb.db()
+    member_doc = (db.collection('shops').document(shop_id)
+                  .collection('members').document(uid).get())
+    if not member_doc.exists:
+        return JsonResponse({'error': 'forbidden'}, status=403)
+
+    shop_doc = db.collection('shops').document(shop_id).get()
+    if not shop_doc.exists:
+        return JsonResponse({'error': 'boutique_introuvable'}, status=404)
+    shop_data = shop_doc.to_dict() or {}
+    owner_id = shop_data.get('ownerId')
+    if not owner_id:
+        return JsonResponse({'error': 'proprietaire_introuvable'}, status=404)
+    name = shop_data.get('name', '')
+
+    tokens = fb.tokens_for_uid(owner_id)
+    sent = fb.send_push(
+        tokens, "Renouvellement demandé",
+        f"Un cogérant souhaite que vous renouveliez l'abonnement Pro de « {name} ».",
+        data={'type': 'subscription', 'stage': 'owner_reminder'},
+    )
+    return JsonResponse({'ok': True, 'sent': sent})
 
 
 @csrf_exempt

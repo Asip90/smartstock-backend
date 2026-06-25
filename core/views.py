@@ -82,6 +82,7 @@ LEGAL_DOCS = {
 def landing(request):
     return render(request, 'landing/landing.html', {
         'download_url': settings.APP_DOWNLOAD_URL,
+        'pwa_url': settings.APP_PWA_URL,
         'price_monthly': settings.PRICE_MONTHLY,
         'price_yearly': settings.PRICE_YEARLY,
     })
@@ -130,4 +131,5 @@ def legal(request, doc):
         'doc_sections': data['sections'],
         'doc_updated': _UPDATED,
         'download_url': settings.APP_DOWNLOAD_URL,
+        'pwa_url': settings.APP_PWA_URL,
     })

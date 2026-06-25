@@ -78,6 +78,7 @@ class Command(BaseCommand):
                     status='active',
                     current_period_end=period_end,
                 )
+                fb.mirror_pro_to_shops(uid, period_end)
                 self.stdout.write(f"Backfill : {uid}")
             else:
                 self.stdout.write(f"[dry-run] Backfill prévu : {uid}")
