@@ -111,9 +111,9 @@ APP_DOWNLOAD_URL = os.environ.get('APP_DOWNLOAD_URL', '/telecharger')
 
 # URL de la PWA (app web installable). Sur iPhone, l'APK Android est inutilisable :
 # la landing redirige les utilisateurs iOS vers cette PWA et leur explique comment
-# l'ajouter à l'écran d'accueil. Par défaut : Firebase Hosting du projet.
-# Surchargeable via l'env (ex. domaine personnalisé).
-APP_PWA_URL = os.environ.get('APP_PWA_URL', 'https://smartstock-1be69.web.app')
+# l'ajouter à l'écran d'accueil. Origine dédiée (scope /) servie sur le VPS.
+# Surchargeable via l'env.
+APP_PWA_URL = os.environ.get('APP_PWA_URL', 'https://compapp.nouyon.site')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # ── Admin (Jazzmin) ──────────────────────────────────────────────────────────
