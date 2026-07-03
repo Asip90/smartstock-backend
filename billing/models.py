@@ -222,3 +222,23 @@ class Commission(models.Model):
 
     def __str__(self):
         return f'{self.referral.promo_code.code} -> {self.amount} ({self.status})'
+
+
+class AdminPush(models.Model):
+    """Composer/auditer un envoi de notif ciblé depuis l'admin. À l'enregistrement,
+    envoie le push et écrit l'historique ; les champs `sent_count`/`resolved_uid`
+    consignent le résultat (lecture seule après coup)."""
+    recipient = models.CharField(
+        max_length=255, help_text="UID Firebase OU email de l'utilisateur.")
+    title = models.CharField(max_length=120)
+    body = models.TextField()
+    sent_count = models.IntegerField(default=0, editable=False)
+    resolved_uid = models.CharField(max_length=128, blank=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Envoi de notification'
+        verbose_name_plural = 'Envois de notifications'
+
+    def __str__(self):
+        return f'{self.recipient} — {self.title}'
