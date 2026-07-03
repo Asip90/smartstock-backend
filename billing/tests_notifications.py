@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 from django.test import SimpleTestCase
 
 from billing import firebase_service
+from billing import notif_engine
 
 
 class RecordNotificationTest(SimpleTestCase):
@@ -26,3 +27,26 @@ class RecordNotificationTest(SimpleTestCase):
         self.assertEqual(payload['type'], 'stock')
         self.assertEqual(payload['read'], False)
         self.assertEqual(payload['data'], {'url': 'https://x', 'n': '3'})
+
+
+class EngineMirrorTest(SimpleTestCase):
+    def test_compose_and_send_records_history(self):
+        with patch.object(notif_engine.NotificationLog, 'recent_for',
+                          return_value=([], None)), \
+                patch.object(notif_engine.NotificationLog.objects, 'create'), \
+                patch.object(notif_engine.ai_service, 'generate_message',
+                             return_value=None), \
+                patch.object(notif_engine.firebase_service, 'tokens_for_uid',
+                             return_value=['tok']), \
+                patch.object(notif_engine.firebase_service, 'send_push',
+                             return_value=1), \
+                patch.object(notif_engine.firebase_service,
+                             'record_notification') as rec:
+            notif_engine.compose_and_send(
+                uid='uid9', kind='stock', facts={},
+                fallback_title='Alerte stock', fallback_body='Produit bas')
+        rec.assert_called_once()
+        self.assertEqual(rec.call_args.args[0], 'uid9')
+        self.assertEqual(rec.call_args.kwargs['title'], 'Alerte stock')
+        self.assertEqual(rec.call_args.kwargs['body'], 'Produit bas')
+        self.assertEqual(rec.call_args.kwargs['ntype'], 'stock')

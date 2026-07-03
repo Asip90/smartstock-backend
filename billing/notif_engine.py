@@ -61,4 +61,8 @@ def compose_and_send(*, uid: str, kind: str, facts: dict, fallback_title: str,
         uid=uid, kind=kind, title=fallback_title, body=body,
         angle=angle, ai_used=ai_used)
 
+    firebase_service.record_notification(
+        uid, title=fallback_title, body=body,
+        data=push_data or {'type': kind}, ntype=kind)
+
     return sent
