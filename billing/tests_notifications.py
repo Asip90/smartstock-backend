@@ -6,6 +6,7 @@ from django.test import SimpleTestCase
 
 from billing import firebase_service
 from billing import notif_engine
+from billing import notifications as notif_admin
 
 
 class RecordNotificationTest(SimpleTestCase):
@@ -50,3 +51,39 @@ class EngineMirrorTest(SimpleTestCase):
         self.assertEqual(rec.call_args.kwargs['title'], 'Alerte stock')
         self.assertEqual(rec.call_args.kwargs['body'], 'Produit bas')
         self.assertEqual(rec.call_args.kwargs['ntype'], 'stock')
+
+
+class TargetedSendTest(SimpleTestCase):
+    def test_uid_recipient_sends_and_records(self):
+        with patch.object(notif_admin.firebase_service, '_ensure_init',
+                          return_value=None), \
+                patch.object(notif_admin.firebase_service, 'tokens_for_uid',
+                             return_value=['a', 'b']) as toks, \
+                patch.object(notif_admin.firebase_service, 'send_push',
+                             return_value=2) as send, \
+                patch.object(notif_admin.firebase_service,
+                             'record_notification') as rec:
+            count, uid = notif_admin.send_targeted_notification(
+                'uid42', 'Bonjour', 'Message test')
+        self.assertEqual((count, uid), (2, 'uid42'))
+        toks.assert_called_once_with('uid42')
+        send.assert_called_once()
+        rec.assert_called_once()
+        self.assertEqual(rec.call_args.kwargs['ntype'], 'admin')
+
+    def test_email_recipient_is_resolved(self):
+        fake_user = MagicMock(uid='resolved-uid')
+        with patch.object(notif_admin.firebase_service, '_ensure_init',
+                          return_value=None), \
+                patch.object(notif_admin.fb_auth, 'get_user_by_email',
+                             return_value=fake_user) as byemail, \
+                patch.object(notif_admin.firebase_service, 'tokens_for_uid',
+                             return_value=['t']), \
+                patch.object(notif_admin.firebase_service, 'send_push',
+                             return_value=1), \
+                patch.object(notif_admin.firebase_service, 'record_notification'):
+            count, uid = notif_admin.send_targeted_notification(
+                'a@b.com', 'T', 'B')
+        byemail.assert_called_once_with('a@b.com')
+        self.assertEqual(uid, 'resolved-uid')
+        self.assertEqual(count, 1)
