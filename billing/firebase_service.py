@@ -120,6 +120,22 @@ def send_push(tokens, title: str, body: str, data: dict | None = None):
     return resp.success_count
 
 
+def record_notification(uid: str, *, title: str, body: str,
+                        data: dict | None = None, ntype: str = '') -> None:
+    """Écrit une notif dans l'historique Firestore users/{uid}/notifications.
+    Source de vérité de la page « Notifications » de l'app (écriture serveur
+    uniquement ; le client ne fait que lire et marquer `read`)."""
+    _ensure_init()
+    (_db.collection('users').document(uid).collection('notifications').add({
+        'title': title,
+        'body': body,
+        'type': ntype,
+        'data': {k: str(v) for k, v in (data or {}).items()},
+        'createdAt': firestore.SERVER_TIMESTAMP,
+        'read': False,
+    }))
+
+
 def mirror_pro_to_shops(owner_uid: str, current_period_end):
     """Écrit `proUntil` (= current_period_end, ou None) sur toutes les boutiques
     possédées par owner_uid, afin que les cogérants invités héritent (ou perdent)

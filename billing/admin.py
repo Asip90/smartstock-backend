@@ -3,8 +3,9 @@ from django.contrib import admin, messages
 from django.utils import timezone
 from .models import (PromoCode, Referral, Transaction, Commission,
                      WithdrawalRequest, AppConfig, CrashReport,
-                     AIConfig, NotificationLog)
+                     AIConfig, NotificationLog, AdminPush)
 from . import firebase_service as fb
+from .notifications import send_targeted_notification
 
 
 @admin.register(CrashReport)
@@ -161,3 +162,30 @@ class CommissionAdmin(admin.ModelAdmin):
     @admin.action(description='Marquer comme versée')
     def mark_paid(self, request, queryset):
         queryset.update(status='paid')
+
+
+@admin.register(AdminPush)
+class AdminPushAdmin(admin.ModelAdmin):
+    """Page « Envoyer une notification » à un user (uid ou email)."""
+    list_display = ('created_at', 'recipient', 'title', 'sent_count', 'resolved_uid')
+    readonly_fields = ('sent_count', 'resolved_uid', 'created_at')
+    fields = ('recipient', 'title', 'body', 'sent_count', 'resolved_uid', 'created_at')
+
+    def has_change_permission(self, request, obj=None):
+        return False  # audit : on ne réédite pas un envoi
+
+    def save_model(self, request, obj, form, change):
+        try:
+            count, uid = send_targeted_notification(
+                obj.recipient, obj.title, obj.body)
+            obj.sent_count = count
+            obj.resolved_uid = uid
+            super().save_model(request, obj, form, change)
+            self.message_user(
+                request,
+                f"Notification envoyée à {obj.recipient} "
+                f"({count} appareil(s)).",
+                level=messages.SUCCESS if count else messages.WARNING)
+        except Exception as e:
+            self.message_user(
+                request, f"Échec de l'envoi : {e}", level=messages.ERROR)
