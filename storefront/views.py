@@ -1,5 +1,7 @@
 """Vues publiques du site vitrine — servies via `storefront.urls`, dispatché
 par `SubdomainStorefrontMiddleware` (jamais par `core/urls.py`)."""
+import datetime
+
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
@@ -8,6 +10,9 @@ from . import firebase_read as fb_read
 from .i18n import STRINGS, t
 
 PAGE_SIZE = 24
+# Repère minimal pour trier par date sans mélanger types (None vs datetime) —
+# cf. `home()` : les documents Firestore legacy peuvent ne pas avoir `createdAt`.
+_EPOCH = datetime.datetime.min.replace(tzinfo=datetime.timezone.utc)
 
 
 def _lang(request) -> str:
@@ -49,7 +54,7 @@ def home(request):
     deals = [p for p in products if p['discountPrice']][:8]
     # Repli temporaire pour "populaires" en attendant les vraies statistiques
     # de vues (cf. plan, section "Écart supplémentaire").
-    popular = sorted(products, key=lambda p: p['createdAt'] or 0, reverse=True)[:8]
+    popular = sorted(products, key=lambda p: p['createdAt'] or _EPOCH, reverse=True)[:8]
 
     paginator = Paginator(products, PAGE_SIZE)
     page = paginator.get_page(request.GET.get('page') or 1)
@@ -85,7 +90,7 @@ def product_detail(request, product_slug: str):
 
 def sitemap(request):
     shop = _load_shop_or_none(request)
-    if shop is None or not shop['storefrontEnabled']:
+    if shop is None or not shop['storefrontEnabled'] or not shop['isPro']:
         raise Http404('Boutique introuvable')
 
     base = f'https://{request.get_host()}'
