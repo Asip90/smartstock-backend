@@ -34,9 +34,9 @@ def _load_shop_or_none(request):
     return fb_read.get_shop_by_slug(slug) if slug else None
 
 
-def _unavailable(request, lang, status=404):
+def _unavailable(request, lang, shop=None, status=404):
     return render(request, 'storefront/unavailable.html', {
-        'lang': lang, 't': _strings(lang),
+        'lang': lang, 'shop': shop, 't': _strings(lang),
     }, status=status)
 
 
@@ -46,7 +46,7 @@ def home(request):
     if shop is None:
         raise Http404('Boutique introuvable')
     if not shop['storefrontEnabled'] or not shop['isPro']:
-        return _unavailable(request, lang)
+        return _unavailable(request, lang, shop=shop)
 
     query = request.GET.get('q', '').strip()
     products = fb_read.list_public_products(shop['id'], search=query)
@@ -74,7 +74,7 @@ def product_detail(request, product_slug: str):
     if shop is None:
         raise Http404('Boutique introuvable')
     if not shop['storefrontEnabled'] or not shop['isPro']:
-        return _unavailable(request, lang)
+        return _unavailable(request, lang, shop=shop)
 
     product_id = product_slug.split('-', 1)[0]
     product = fb_read.get_public_product(shop['id'], product_id)
