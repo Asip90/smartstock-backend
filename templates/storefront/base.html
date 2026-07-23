@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ shop.name }}{% endblock %}</title>
     {% block meta %}
+    {% if lang == 'en' %}
+    <meta name="description" content="{{ shop.seoDescription_en|default:shop.name }}">
+    {% else %}
     <meta name="description" content="{{ shop.seoDescription_fr|default:shop.name }}">
+    {% endif %}
     {% endblock %}
     <script src="https://cdn.tailwindcss.com"></script>
     <script>

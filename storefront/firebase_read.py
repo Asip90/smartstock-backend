@@ -79,6 +79,8 @@ def get_shop_by_slug(slug: str) -> dict | None:
         'heroSubtitle_en': settings_.get('heroSubtitle_en'),
         'aboutText_fr': settings_.get('aboutText_fr'),
         'aboutText_en': settings_.get('aboutText_en'),
+        'seoDescription_fr': settings_.get('seoDescription_fr'),
+        'seoDescription_en': settings_.get('seoDescription_en'),
         'whatsappNumber': settings_.get('whatsappNumber'),
         'allowContact': bool(settings_.get('allowContact', True)),
         'primaryColorHex': settings_.get('primaryColorHex') or '#1565C0',
