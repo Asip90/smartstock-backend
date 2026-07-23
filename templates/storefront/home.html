@@ -1,0 +1,108 @@
+{% extends 'storefront/base.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-4">
+    <form method="get" class="relative mb-6">
+        <input type="text" name="q" value="{{ query }}" placeholder="{{ t.search_placeholder }}"
+               class="w-full rounded-full border border-gray-200 py-3 px-5 text-sm focus:outline-none focus:border-shopPrimary">
+    </form>
+
+    {% if shop.heroImageUrl or shop.heroTitle_fr %}
+    <section class="rounded-3xl bg-shopPrimary/10 p-8 mb-8 flex items-center justify-between overflow-hidden">
+        <div class="max-w-xs">
+            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900">
+                {% if lang == 'en' %}{{ shop.heroTitle_en|default:shop.heroTitle_fr }}{% else %}{{ shop.heroTitle_fr }}{% endif %}
+            </h1>
+            <p class="mt-2 text-sm text-gray-600">
+                {% if lang == 'en' %}{{ shop.heroSubtitle_en|default:shop.heroSubtitle_fr }}{% else %}{{ shop.heroSubtitle_fr }}{% endif %}
+            </p>
+            <a href="#catalog" class="inline-block mt-4 bg-shopPrimary text-white font-semibold rounded-full px-6 py-3 text-sm">
+                {{ t.shop_now }}
+            </a>
+        </div>
+        {% if shop.heroImageUrl %}
+        <img src="{{ shop.heroImageUrl }}" alt="" class="w-32 h-32 object-cover rounded-2xl hidden md:block">
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {% if categories %}
+    <section id="categories" class="flex gap-4 overflow-x-auto mb-8 pb-2">
+        {% for cat in categories %}
+        <div class="flex flex-col items-center gap-2 shrink-0">
+            <div class="w-14 h-14 rounded-full bg-shopPrimary/10 flex items-center justify-center">
+                <span class="text-shopPrimary">&#9679;</span>
+            </div>
+            <span class="text-xs font-semibold">{{ cat.name }}</span>
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if deals %}
+    <section class="mb-8">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="font-bold text-lg">{{ t.deals_of_the_day }}</h2>
+            <a href="?q=" class="text-shopPrimary text-sm font-semibold">{{ t.view_all }} &rarr;</a>
+        </div>
+        <div class="flex gap-4 overflow-x-auto pb-2">
+            {% for p in deals %}
+            <a href="{% url 'storefront_product' p.url_slug %}" class="shrink-0 w-40 border border-gray-100 rounded-2xl p-3">
+                {% if p.images %}<img src="{{ p.images.0 }}" alt="{{ p.name }}" class="w-full h-28 object-cover rounded-xl mb-2">{% endif %}
+                <p class="text-sm font-semibold truncate">{{ p.name }}</p>
+                <p class="text-shopPrimary font-bold">{{ p.discountPrice }} {{ shop.currency }}</p>
+                <p class="text-xs text-gray-400 line-through">{{ p.price }} {{ shop.currency }}</p>
+                <span class="inline-block mt-1 text-[10px] font-bold bg-red-50 text-red-600 rounded-full px-2 py-0.5">
+                    -{{ p.discountPercent }}%
+                </span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if popular %}
+    <section class="mb-8">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="font-bold text-lg">{{ t.popular_products }}</h2>
+            <a href="?q=" class="text-shopPrimary text-sm font-semibold">{{ t.view_all }} &rarr;</a>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            {% for p in popular %}
+            <a href="{% url 'storefront_product' p.url_slug %}" class="border border-gray-100 rounded-2xl p-3">
+                {% if p.images %}<img src="{{ p.images.0 }}" alt="{{ p.name }}" class="w-full h-32 object-cover rounded-xl mb-2">{% endif %}
+                <p class="text-sm font-semibold truncate">{{ p.name }}</p>
+                <p class="text-shopPrimary font-bold">{{ p.price }} {{ shop.currency }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <section id="catalog">
+        {% if page.object_list %}
+        <div class="grid grid-cols-2 gap-4">
+            {% for p in page %}
+            <a href="{% url 'storefront_product' p.url_slug %}" class="border border-gray-100 rounded-2xl p-3">
+                {% if p.images %}<img src="{{ p.images.0 }}" alt="{{ p.name }}" class="w-full h-32 object-cover rounded-xl mb-2">{% endif %}
+                <p class="text-sm font-semibold truncate">{{ p.name }}</p>
+                <p class="text-shopPrimary font-bold">{{ p.price }} {{ shop.currency }}</p>
+                {% if not p.inStock %}<p class="text-xs text-red-500">{{ t.out_of_stock }}</p>{% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        {% if page.has_other_pages %}
+        <div class="flex justify-center gap-2 mt-6 text-sm">
+            {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}&q={{ query }}" class="px-3 py-1 border rounded-full">&laquo;</a>{% endif %}
+            {% if page.has_next %}<a href="?page={{ page.next_page_number }}&q={{ query }}" class="px-3 py-1 border rounded-full">&raquo;</a>{% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-16">
+            <p class="font-bold text-lg">{{ t.empty_catalog_title }}</p>
+            <p class="text-sm text-gray-500 mt-1">{{ t.empty_catalog_subtitle }}</p>
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'storefront/base.html' %}
+
+{% block title %}{{ product.name }} | {{ shop.name }}{% endblock %}
+{% block meta %}
+<meta property="og:title" content="{{ product.name }}">
+<meta property="og:description" content="{{ product.description|truncatechars:160 }}">
+{% if product.images %}<meta property="og:image" content="{{ product.images.0 }}">{% endif %}
+<meta name="description" content="{{ product.description|truncatechars:160 }}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-6">
+    <a href="{% url 'storefront_home' %}" class="text-sm font-semibold text-shopPrimary">&larr; {{ t.back_to_shop }}</a>
+
+    {% if product.images %}
+    <div class="flex gap-3 overflow-x-auto mt-4 mb-4">
+        {% for img in product.images %}
+        <img src="{{ img }}" alt="{{ product.name }}" class="w-full max-w-md rounded-2xl object-cover shrink-0">
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if product.videoUrl %}
+    <video controls class="w-full rounded-2xl mb-4"><source src="{{ product.videoUrl }}"></video>
+    {% endif %}
+
+    <h1 class="text-2xl font-extrabold">{{ product.name }}</h1>
+    <div class="mt-2 flex items-center gap-3">
+        <span class="text-xl font-bold text-shopPrimary">
+            {{ product.discountPrice|default:product.price }} {{ shop.currency }}
+        </span>
+        {% if product.discountPrice %}
+        <span class="text-sm text-gray-400 line-through">{{ product.price }} {{ shop.currency }}</span>
+        <span class="text-xs font-bold bg-red-50 text-red-600 rounded-full px-2 py-0.5">-{{ product.discountPercent }}%</span>
+        {% endif %}
+    </div>
+    <p class="mt-1 text-sm {% if product.inStock %}text-green-600{% else %}text-red-500{% endif %}">
+        {% if product.inStock %}{{ t.in_stock }}{% else %}{{ t.out_of_stock }}{% endif %}
+    </p>
+    <p class="mt-4 text-gray-600 leading-relaxed">{{ product.description }}</p>
+
+    {% if shop.allowContact %}
+    <a href="https://wa.me/{{ shop.whatsappNumber }}?text={{ product.name|urlencode }}"
+       class="mt-6 inline-block bg-shopPrimary text-white font-semibold rounded-full px-6 py-3 text-sm">
+        {{ t.contact_whatsapp }}
+    </a>
+    {% endif %}
+</div>
+{% endblock %}

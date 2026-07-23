@@ -1,0 +1,7 @@
+{% extends 'storefront/base.html' %}
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-24 text-center">
+    <p class="font-bold text-xl">{{ t.product_not_found }}</p>
+    <a href="{% url 'storefront_home' %}" class="mt-4 inline-block text-shopPrimary font-semibold">{{ t.back_to_shop }}</a>
+</div>
+{% endblock %}
