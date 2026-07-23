@@ -15,6 +15,16 @@ CSRF_TRUSTED_ORIGINS = [
     o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o
 ]
 
+# Domaines sous lesquels les sites de boutique en ligne sont servis, par
+# sous-domaine (<slug>.<domaine>). `compa.site` sera ajouté une fois acheté
+# (cf. spec boutique en ligne) ; le DNS wildcard doit être configuré côté
+# registrar pour chaque domaine listé ici — non automatisable depuis ce repo.
+STOREFRONT_BASE_DOMAINS = [
+    d for d in os.environ.get(
+        'STOREFRONT_BASE_DOMAINS', 'compa.nouyon.site'
+    ).split(',') if d
+]
+
 INSTALLED_APPS = [
     'jazzmin',
     'corsheaders',
@@ -26,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'billing',
+    'storefront',
 ]
 
 MIDDLEWARE = [
