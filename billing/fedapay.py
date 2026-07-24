@@ -79,6 +79,46 @@ def get_transaction_status(fedapay_id: str) -> str:
     return (tx.get('status') or '').lower()
 
 
+def create_payout(*, amount: int, firstname: str, lastname: str,
+                   phone_number: str, phone_country: str, currency: str = 'XOF'):
+    """Crée un payout (transfert du solde marchand FedaPay vers un numéro
+    Mobile Money) — utilisé pour reverser aux propriétaires de boutique
+    (cf. design solde & retraits). Jamais appelé automatiquement : toujours
+    déclenché par une validation humaine (page admin dédiée).
+
+    Retourne {'fedapay_id', 'status', 'fees', 'amount_debited',
+    'amount_transferred'}. `amount_debited`/`fees` reflètent le coût réel
+    facturé par FedaPay — jamais devinés côté app, toujours lus depuis la
+    réponse (repli sûr sur `amount` si l'API ne les renvoie pas)."""
+    base = _base_url()
+    resp = requests.post(
+        f'{base}/v1/payouts',
+        headers=_headers(),
+        json={
+            'amount': amount,
+            'currency': {'iso': currency},
+            'mode': 'mobile_money',
+            'customer': {
+                'firstname': firstname,
+                'lastname': lastname,
+                'phone_number': {'number': phone_number, 'country': phone_country},
+            },
+        },
+        timeout=20,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    payout = data.get('v1/payout') or data.get('payout') or {}
+    amount_transferred = payout.get('amount_transferred', amount)
+    return {
+        'fedapay_id': str(payout.get('id', '')),
+        'status': (payout.get('status') or '').lower(),
+        'fees': payout.get('fees', 0),
+        'amount_debited': payout.get('amount_debited', amount_transferred),
+        'amount_transferred': amount_transferred,
+    }
+
+
 def verify_webhook_signature(payload: bytes, signature: str) -> bool:
     """Vérifie la signature HMAC du webhook (header X-FEDAPAY-SIGNATURE)."""
     secret = settings.FEDAPAY_WEBHOOK_SECRET
