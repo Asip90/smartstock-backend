@@ -2,7 +2,13 @@ from unittest.mock import MagicMock, patch
 
 from django.test import TestCase
 
-from storefront.orders import CartLineError, build_order_lines, create_order
+from storefront.orders import (
+    CartLineError,
+    build_order_lines,
+    create_order,
+    mark_order_paid,
+    set_payment_ref,
+)
 
 
 class BuildOrderLinesTests(TestCase):
@@ -68,3 +74,63 @@ class CreateOrderTests(TestCase):
         self.assertEqual(written['totalAmount'], 2000)
         self.assertEqual(written['customerName'], 'Awa')
         self.assertEqual(written['items'][0]['productId'], 'p1')
+
+    @patch('storefront.orders.fb.db')
+    def test_payment_mode_online_ecrit_online(self, mock_db):
+        mock_add = mock_db.return_value.collection.return_value.add
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.id = 'order123'
+        mock_add.return_value = (None, mock_doc_ref)
+
+        create_order(
+            's1', customer_name='Awa', customer_phone='229010000',
+            customer_address='Cotonou',
+            lines=[{'productId': 'p1', 'name': 'Sac', 'price': 1000, 'qty': 1}],
+            payment_mode='online',
+        )
+
+        written = mock_add.call_args[0][0]
+        self.assertEqual(written['paymentMode'], 'online')
+
+
+class SetPaymentRefTests(TestCase):
+    @patch('storefront.orders.fb.db')
+    def test_ecrit_le_paymentRef_sur_la_commande(self, mock_db):
+        mock_update = mock_db.return_value.collection.return_value.document.return_value.update
+        set_payment_ref('order123', 'fp_tx_1')
+        mock_update.assert_called_once_with({'paymentRef': 'fp_tx_1'})
+
+
+class MarkOrderPaidTests(TestCase):
+    @patch('storefront.orders.fb.db')
+    def test_trouve_la_commande_par_paymentRef_et_passe_paid(self, mock_db):
+        doc = MagicMock()
+        doc.id = 'order123'
+        doc.to_dict.return_value = {'status': 'pending'}
+        mock_db.return_value.collection.return_value.where.return_value.limit.return_value.stream.return_value = iter([doc])
+
+        result = mark_order_paid('fp_tx_1')
+
+        self.assertTrue(result)
+        mock_db.return_value.collection.return_value.document.assert_called_with('order123')
+        mock_db.return_value.collection.return_value.document.return_value.update.assert_called_once_with({'status': 'paid'})
+
+    @patch('storefront.orders.fb.db')
+    def test_ne_fait_rien_si_deja_paid_ou_confirmed(self, mock_db):
+        doc = MagicMock()
+        doc.id = 'order123'
+        doc.to_dict.return_value = {'status': 'confirmed'}
+        mock_db.return_value.collection.return_value.where.return_value.limit.return_value.stream.return_value = iter([doc])
+
+        result = mark_order_paid('fp_tx_1')
+
+        self.assertFalse(result)
+        mock_db.return_value.collection.return_value.document.return_value.update.assert_not_called()
+
+    @patch('storefront.orders.fb.db')
+    def test_renvoie_faux_si_aucune_commande_ne_correspond(self, mock_db):
+        mock_db.return_value.collection.return_value.where.return_value.limit.return_value.stream.return_value = iter([])
+
+        result = mark_order_paid('fp_tx_inconnu')
+
+        self.assertFalse(result)

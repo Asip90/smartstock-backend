@@ -45,9 +45,12 @@ def build_order_lines(shop_id: str, cart: dict[str, int]) -> list[dict]:
 
 
 def create_order(shop_id: str, *, customer_name: str, customer_phone: str,
-                  customer_address: str, lines: list[dict]) -> str:
-    """Écrit `storeOrders/{orderId}` (mode cash_on_delivery uniquement en
-    Phase 2, cf. design). Retourne l'id généré."""
+                  customer_address: str, lines: list[dict],
+                  payment_mode: str = 'cash_on_delivery') -> str:
+    """Écrit `storeOrders/{orderId}`. `payment_mode` = 'cash_on_delivery'
+    (défaut, Phase 2) ou 'online' (Phase 3, `paymentRef` rempli ensuite par
+    [set_payment_ref] une fois la transaction FedaPay créée). Retourne
+    l'id généré."""
     total = sum(line['price'] * line['qty'] for line in lines)
     db = fb.db()
     _, doc_ref = db.collection('storeOrders').add({
@@ -59,7 +62,31 @@ def create_order(shop_id: str, *, customer_name: str, customer_phone: str,
         'customerAddress': customer_address,
         'items': lines,
         'totalAmount': total,
-        'paymentMode': 'cash_on_delivery',
+        'paymentMode': payment_mode,
         'paymentRef': None,
     })
     return doc_ref.id
+
+
+def set_payment_ref(order_id: str, fedapay_id: str) -> None:
+    """Enregistre l'id de transaction FedaPay sur la commande, juste après
+    la création du checkout — permet au webhook de retrouver la commande
+    par `paymentRef == fedapay_id` (cf. [mark_order_paid])."""
+    fb.db().collection('storeOrders').document(order_id).update({'paymentRef': fedapay_id})
+
+
+def mark_order_paid(fedapay_id: str) -> bool:
+    """Passe `pending -> paid` la commande dont `paymentRef == fedapay_id`
+    (appelé par le webhook FedaPay boutique). Idempotent : ne fait rien si
+    la commande est introuvable ou déjà dans un autre statut (évite un
+    double traitement si FedaPay renvoie le webhook plusieurs fois).
+    Renvoie True si le statut a été changé."""
+    db = fb.db()
+    docs = db.collection('storeOrders').where('paymentRef', '==', fedapay_id).limit(1).stream()
+    doc = next(docs, None)
+    if doc is None:
+        return False
+    if doc.to_dict().get('status') != 'pending':
+        return False
+    db.collection('storeOrders').document(doc.id).update({'status': 'paid'})
+    return True

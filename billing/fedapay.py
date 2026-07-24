@@ -23,8 +23,11 @@ def _headers():
 
 
 def create_checkout(*, amount: int, description: str, customer_email: str,
-                    callback_url: str = ''):
+                    callback_url: str = '', currency: str = 'XOF'):
     """Crée une transaction FedaPay puis un token de paiement.
+
+    `currency` : XOF par défaut (abonnements Pro) ; la boutique en ligne
+    passe la devise de la boutique (`ShopModel.currency`).
 
     Retourne {'fedapay_id', 'token', 'url'} — l'app ouvre `url` en WebView.
     """
@@ -36,7 +39,7 @@ def create_checkout(*, amount: int, description: str, customer_email: str,
         json={
             'description': description,
             'amount': amount,
-            'currency': {'iso': 'XOF'},
+            'currency': {'iso': currency},
             'callback_url': callback_url,
             'customer': {'email': customer_email} if customer_email else {},
         },
