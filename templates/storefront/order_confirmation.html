@@ -1,0 +1,11 @@
+{% extends "storefront/base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-10 text-center">
+    <p class="text-4xl mb-4">&#10003;</p>
+    <h1 class="text-xl font-bold mb-2">{{ t.order_confirmed_title }}</h1>
+    <p class="text-gray-500 mb-6">{{ t.order_confirmed_body }}</p>
+    <a href="{% url 'storefront_home' %}" class="inline-block bg-shopPrimary text-white font-semibold rounded-xl px-6 py-3">
+        {{ t.back_to_home }}
+    </a>
+</div>
+{% endblock %}

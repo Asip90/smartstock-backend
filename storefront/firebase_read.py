@@ -84,6 +84,7 @@ def get_shop_by_slug(slug: str) -> dict | None:
         'seoDescription_en': settings_.get('seoDescription_en'),
         'whatsappNumber': settings_.get('whatsappNumber'),
         'allowContact': bool(settings_.get('allowContact', True)),
+        'allowCartOrder': bool(settings_.get('allowCartOrder', False)),
         'primaryColorHex': settings_.get('primaryColorHex') or '#1565C0',
         'isPro': _shop_is_pro(data),
     }
@@ -132,6 +133,8 @@ def get_public_products_by_ids(shop_id: str, product_ids: list[str]) -> dict[str
     envoyées par le navigateur. Un id supprimé/privé/d'une autre boutique
     est silencieusement omis (le checkout traite ça comme une ligne de
     panier obsolète, cf. `storefront/orders.py`)."""
+    if not product_ids:
+        return {}
     db = fb.db()
     result: dict[str, dict] = {}
     for product_id in product_ids:

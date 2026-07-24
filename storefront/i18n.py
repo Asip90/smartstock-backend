@@ -32,6 +32,37 @@ STRINGS: dict[str, dict[str, str]] = {
     },
     'back_to_shop': {'fr': 'Retour à la boutique', 'en': 'Back to the shop'},
     'off_badge': {'fr': '{percent}% de réduction', 'en': '{percent}% OFF'},
+    'cart': {'fr': 'Panier', 'en': 'Cart'},
+    'add_to_cart': {'fr': 'Ajouter au panier', 'en': 'Add to cart'},
+    'added_to_cart': {'fr': 'Ajouté au panier', 'en': 'Added to cart'},
+    'cart_empty': {'fr': 'Votre panier est vide', 'en': 'Your cart is empty'},
+    'quantity': {'fr': 'Quantité', 'en': 'Quantity'},
+    'remove': {'fr': 'Retirer', 'en': 'Remove'},
+    'total': {'fr': 'Total', 'en': 'Total'},
+    'checkout': {'fr': 'Passer la commande', 'en': 'Checkout'},
+    'customer_name': {'fr': 'Nom complet', 'en': 'Full name'},
+    'customer_phone': {'fr': 'Numéro de téléphone', 'en': 'Phone number'},
+    'customer_address': {'fr': 'Adresse de livraison', 'en': 'Delivery address'},
+    'payment_cash_on_delivery': {'fr': 'Paiement à la livraison', 'en': 'Cash on delivery'},
+    'confirm_order': {'fr': 'Confirmer la commande', 'en': 'Confirm order'},
+    'order_confirmed_title': {'fr': 'Commande envoyée !', 'en': 'Order sent!'},
+    'order_confirmed_body': {
+        'fr': 'Le vendeur va vous contacter pour confirmer la livraison.',
+        'en': 'The seller will contact you to confirm delivery.',
+    },
+    'back_to_home': {'fr': "Retour à l'accueil", 'en': 'Back to home'},
+    'stock_error_unavailable': {
+        'fr': "« {name} » n'est plus disponible, retiré du panier.",
+        'en': '"{name}" is no longer available, removed from cart.',
+    },
+    'stock_error_insufficient': {
+        'fr': "Stock insuffisant pour « {name} » (il en reste {available}).",
+        'en': 'Not enough stock for "{name}" ({available} left).',
+    },
+    'too_many_attempts': {
+        'fr': 'Trop de tentatives, réessayez dans quelques minutes.',
+        'en': 'Too many attempts, please try again in a few minutes.',
+    },
 }
 
 _DEFAULT_LANG = 'fr'

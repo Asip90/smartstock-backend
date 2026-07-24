@@ -5,6 +5,7 @@ db.sqlite3
 *.sqlite3
 staticfiles/
 .venv/
+.venv312/
 venv/
 serviceAccount*.json
 .worktrees/

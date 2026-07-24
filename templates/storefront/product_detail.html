@@ -38,9 +38,20 @@
     </p>
     <p class="mt-4 text-gray-600 leading-relaxed">{{ product.description }}</p>
 
+    {% if shop.allowCartOrder and product.inStock %}
+    <form method="post" action="{% url 'storefront_cart_add' %}" class="mt-6">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <input type="hidden" name="qty" value="1">
+        <button type="submit" class="w-full sm:w-auto bg-shopPrimary text-white font-semibold rounded-full px-6 py-3 text-sm">
+            {{ t.add_to_cart }}
+        </button>
+    </form>
+    {% endif %}
+
     {% if shop.allowContact %}
     <a href="https://wa.me/{{ shop.whatsappNumber }}?text={{ product.name|urlencode }}"
-       class="mt-6 inline-block bg-shopPrimary text-white font-semibold rounded-full px-6 py-3 text-sm">
+       class="mt-3 inline-block bg-shopPrimary text-white font-semibold rounded-full px-6 py-3 text-sm">
         {{ t.contact_whatsapp }}
     </a>
     {% endif %}
