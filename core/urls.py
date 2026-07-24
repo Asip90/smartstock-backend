@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import landing, legal, payment_ok, download_apk
 from billing import promoter_views
+from storefront import payment_webhook as storefront_payment_webhook
 
 urlpatterns = [
     path('', landing, name='landing'),
@@ -15,6 +16,12 @@ urlpatterns = [
 
     # Retour de paiement FedaPay (détecté par la WebView de l'app).
     path('paiement/ok', payment_ok, name='payment_ok'),
+
+    # Webhook FedaPay dédié à la boutique en ligne (route stable, hors
+    # sous-domaine — le storefront ne résout `storefront.urls` que via le
+    # middleware de sous-domaine, injoignable pour un callback FedaPay).
+    path('api/webhook/fedapay/storefront', storefront_payment_webhook.webhook_view,
+         name='storefront_fedapay_webhook'),
 
     # Pages legales
     path('confidentialite', legal, {'doc': 'confidentialite'}, name='privacy'),
