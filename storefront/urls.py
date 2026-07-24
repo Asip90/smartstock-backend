@@ -10,6 +10,7 @@ urlpatterns = [
     path('panier/modifier', views.update_cart_view, name='storefront_cart_update'),
     path('panier/retirer', views.remove_from_cart_view, name='storefront_cart_remove'),
     path('commande', views.checkout_view, name='storefront_checkout'),
+    path('paiement/retour', views.payment_return_view, name='storefront_payment_return'),
     path('sitemap.xml', views.sitemap, name='storefront_sitemap'),
     path('robots.txt', views.robots, name='storefront_robots'),
 ]

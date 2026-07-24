@@ -63,6 +63,17 @@ STRINGS: dict[str, dict[str, str]] = {
         'fr': 'Trop de tentatives, réessayez dans quelques minutes.',
         'en': 'Too many attempts, please try again in a few minutes.',
     },
+    'pay_cash_on_delivery': {'fr': 'Paiement à la livraison', 'en': 'Cash on delivery'},
+    'pay_online': {'fr': 'Payer en ligne maintenant', 'en': 'Pay online now'},
+    'online_payment_email_label': {'fr': 'Email (reçu de paiement)', 'en': 'Email (payment receipt)'},
+    'online_payment_email_required': {
+        'fr': 'Un email est requis pour payer en ligne.',
+        'en': 'An email is required to pay online.',
+    },
+    'online_payment_unavailable': {
+        'fr': 'Paiement en ligne indisponible pour le moment, réessayez ou choisissez le paiement à la livraison.',
+        'en': 'Online payment unavailable right now, try again or choose cash on delivery.',
+    },
 }
 
 _DEFAULT_LANG = 'fr'

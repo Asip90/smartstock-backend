@@ -85,6 +85,7 @@ def get_shop_by_slug(slug: str) -> dict | None:
         'whatsappNumber': settings_.get('whatsappNumber'),
         'allowContact': bool(settings_.get('allowContact', True)),
         'allowCartOrder': bool(settings_.get('allowCartOrder', False)),
+        'allowOnlinePayment': bool(settings_.get('allowOnlinePayment', False)),
         'primaryColorHex': settings_.get('primaryColorHex') or '#1565C0',
         'isPro': _shop_is_pro(data),
     }

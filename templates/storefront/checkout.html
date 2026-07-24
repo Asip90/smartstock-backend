@@ -29,7 +29,23 @@
         <input type="text" name="customer_name" required placeholder="{{ t.customer_name }}" class="w-full border border-gray-200 rounded-lg px-3 py-2">
         <input type="tel" name="customer_phone" required placeholder="{{ t.customer_phone }}" class="w-full border border-gray-200 rounded-lg px-3 py-2">
         <input type="text" name="customer_address" required placeholder="{{ t.customer_address }}" class="w-full border border-gray-200 rounded-lg px-3 py-2">
-        <p class="text-sm text-gray-500">{{ t.payment_cash_on_delivery }}</p>
+
+        {% if shop.allowOnlinePayment %}
+        <div class="space-y-2 border border-gray-200 rounded-lg p-3">
+            <label class="flex items-center gap-2 text-sm">
+                <input type="radio" name="payment_mode" value="cash_on_delivery" checked>
+                {{ t.pay_cash_on_delivery }}
+            </label>
+            <label class="flex items-center gap-2 text-sm">
+                <input type="radio" name="payment_mode" value="online">
+                {{ t.pay_online }}
+            </label>
+        </div>
+        <input type="email" name="customer_email" placeholder="{{ t.online_payment_email_label }}" class="w-full border border-gray-200 rounded-lg px-3 py-2">
+        {% else %}
+        <p class="text-sm text-gray-500">{{ t.pay_cash_on_delivery }}</p>
+        {% endif %}
+
         <button type="submit" class="w-full bg-shopPrimary text-white font-semibold rounded-xl py-3">
             {{ t.confirm_order }}
         </button>

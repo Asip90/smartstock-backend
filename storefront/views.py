@@ -6,14 +6,17 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
+
+from billing import fedapay
 
 from . import cart as cart_mod
 from . import firebase_read as fb_read
 from . import notify
 from . import ratelimit
 from .i18n import STRINGS, t
-from .orders import CartLineError, build_order_lines, create_order
+from .orders import CartLineError, build_order_lines, create_order, set_payment_ref
 
 PAGE_SIZE = 24
 # Repère minimal pour trier par date sans mélanger types (None vs datetime) —
@@ -194,6 +197,47 @@ def checkout_view(request):
                 )
             return redirect('storefront_cart')
 
+        requested_mode = request.POST.get('payment_mode', 'cash_on_delivery')
+        # Ne jamais faire confiance au formulaire pour un choix qui a un
+        # impact financier : le mode en ligne n'est retenu que si la
+        # boutique l'a explicitement activé côté Paramètres.
+        payment_mode = 'online' if (requested_mode == 'online' and shop.get('allowOnlinePayment')) else 'cash_on_delivery'
+        total = sum(line['price'] * line['qty'] for line in lines)
+
+        if payment_mode == 'online':
+            customer_email = request.POST.get('customer_email', '').strip()
+            if not customer_email:
+                messages.error(request, t('online_payment_email_required', lang))
+                return redirect('storefront_checkout')
+
+            order_id = create_order(
+                shop['id'],
+                customer_name=request.POST.get('customer_name', '').strip(),
+                customer_phone=request.POST.get('customer_phone', '').strip(),
+                customer_address=request.POST.get('customer_address', '').strip(),
+                lines=lines,
+                payment_mode='online',
+            )
+            try:
+                checkout = fedapay.create_checkout(
+                    amount=int(total),
+                    description=f"Commande {shop['name']}",
+                    customer_email=customer_email,
+                    callback_url=request.build_absolute_uri(reverse('storefront_payment_return')),
+                    currency=shop['currency'],
+                )
+            except Exception:
+                # La commande reste `pending` sans paymentRef — l'owner peut
+                # l'annuler manuellement ; pas de retry automatique en v1
+                # (cf. design Phase 3, compromis assumé).
+                messages.error(request, t('online_payment_unavailable', lang))
+                return redirect('storefront_checkout')
+
+            set_payment_ref(order_id, checkout['fedapay_id'])
+            notify.notify_new_order(shop['id'], shop['name'], order_id, total)
+            cart_mod.clear_cart(request)
+            return redirect(checkout['url'])
+
         order_id = create_order(
             shop['id'],
             customer_name=request.POST.get('customer_name', '').strip(),
@@ -201,7 +245,6 @@ def checkout_view(request):
             customer_address=request.POST.get('customer_address', '').strip(),
             lines=lines,
         )
-        total = sum(line['price'] * line['qty'] for line in lines)
         notify.notify_new_order(shop['id'], shop['name'], order_id, total)
         cart_mod.clear_cart(request)
         return render(request, 'storefront/order_confirmation.html', {
@@ -216,6 +259,19 @@ def checkout_view(request):
     total = sum(line['subtotal'] for line in lines)
     return render(request, 'storefront/checkout.html', {
         'shop': shop, 'lang': lang, 't': _strings(lang), 'lines': lines, 'total': total,
+    })
+
+
+def payment_return_view(request):
+    """Retour navigateur après paiement FedaPay (`callback_url`). Le
+    webhook étant asynchrone, le statut réel n'est pas garanti connu à cet
+    instant — message générique, jamais un statut affirmé à tort."""
+    lang = _lang(request)
+    shop = _load_shop_or_none(request)
+    if shop is None:
+        raise Http404('Boutique introuvable')
+    return render(request, 'storefront/order_confirmation.html', {
+        'shop': shop, 'lang': lang, 't': _strings(lang), 'order_id': None,
     })
 
 
