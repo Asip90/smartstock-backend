@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Demandes de retrait — Compa</title>
+    <style>
+        body { font-family: sans-serif; max-width: 900px; margin: 40px auto; color: #1a1a1a; }
+        h1 { color: #1565C0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e5e5e5; }
+        .actions form { display: inline-block; margin-right: 8px; }
+        button { padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
+        .approve { background: #16A34A; color: white; }
+        .reject { background: #DC2626; color: white; }
+        .messages { margin: 16px 0; }
+        .messages li { list-style: none; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; }
+        .messages .success { background: #E8F5E9; color: #16A34A; }
+        .messages .error { background: #FEE2E2; color: #DC2626; }
+        input[type="text"] { padding: 6px; border: 1px solid #ccc; border-radius: 6px; width: 140px; }
+    </style>
+</head>
+<body>
+    <h1>Demandes de retrait en attente</h1>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if not pending %}
+    <p>Aucune demande en attente.</p>
+    {% else %}
+    <table>
+        <thead>
+            <tr>
+                <th>Boutique</th>
+                <th>Montant demandé</th>
+                <th>Numéro Mobile Money</th>
+                <th>Pays</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in pending %}
+            <tr>
+                <td>{{ req.shopName }}</td>
+                <td>{{ req.amountRequested }}</td>
+                <td>{{ req.phoneNumber }}</td>
+                <td>{{ req.phoneCountry }}</td>
+                <td class="actions">
+                    <form method="post" action="{% url 'storefront_payout_approve' req.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="approve" onclick="return confirm('Envoyer {{ req.amountRequested }} au numéro {{ req.phoneNumber }} ?');">Approuver et envoyer</button>
+                    </form>
+                    <form method="post" action="{% url 'storefront_payout_reject' req.id %}">
+                        {% csrf_token %}
+                        <input type="text" name="note" placeholder="Motif (optionnel)">
+                        <button type="submit" class="reject" onclick="return confirm('Rejeter cette demande ?');">Rejeter</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</body>
+</html>

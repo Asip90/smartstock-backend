@@ -5,9 +5,20 @@ from django.conf.urls.static import static
 from .views import landing, legal, payment_ok, download_apk
 from billing import promoter_views
 from storefront import payment_webhook as storefront_payment_webhook
+from storefront import payout_admin
 
 urlpatterns = [
     path('', landing, name='landing'),
+
+    # Page d'admin dédiée aux demandes de retrait (solde boutique en ligne,
+    # Firestore — pas un ModelAdmin Postgres). Placée AVANT `admin/` pour ne
+    # pas être capturée par le catch-all de `admin.site.urls`.
+    path('admin/payouts/', payout_admin.payout_requests_view, name='storefront_payout_requests'),
+    path('admin/payouts/<str:request_id>/approuver', payout_admin.approve_payout_view,
+         name='storefront_payout_approve'),
+    path('admin/payouts/<str:request_id>/rejeter', payout_admin.reject_payout_view,
+         name='storefront_payout_reject'),
+
     path('admin/', admin.site.urls),
     path('api/', include('billing.urls')),
 
