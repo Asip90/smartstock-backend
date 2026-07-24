@@ -1,6 +1,14 @@
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
 
-from storefront.firebase_read import _serialize_product, _shop_is_pro, _slugify
+from storefront.firebase_read import (
+    _serialize_product,
+    _shop_is_pro,
+    _slugify,
+    get_public_products_by_ids,
+    get_shop_owner_uid,
+)
 
 
 class SlugifyTests(TestCase):
@@ -70,3 +78,76 @@ class ShopIsProTests(TestCase):
         import datetime
         past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         self.assertFalse(_shop_is_pro({'proUntil': past}))
+
+
+class GetPublicProductsByIdsTests(TestCase):
+    @patch('storefront.firebase_read.fb.db')
+    def test_renvoie_un_dict_id_vers_produit_serialise(self, mock_db):
+        doc1 = MagicMock()
+        doc1.exists = True
+        doc1.id = 'p1'
+        doc1.to_dict.return_value = {'shopId': 's1', 'name': 'Sac', 'price': 1000, 'isPublic': True}
+        doc2 = MagicMock()
+        doc2.exists = True
+        doc2.id = 'p2'
+        doc2.to_dict.return_value = {'shopId': 's1', 'name': 'Robe', 'price': 2000, 'isPublic': True}
+
+        def get_doc(pid):
+            m = MagicMock()
+            m.get.return_value = {'p1': doc1, 'p2': doc2}[pid]
+            return m
+
+        mock_db.return_value.collection.return_value.document.side_effect = get_doc
+
+        result = get_public_products_by_ids('s1', ['p1', 'p2'])
+        self.assertEqual(set(result.keys()), {'p1', 'p2'})
+        self.assertEqual(result['p1']['name'], 'Sac')
+
+    @patch('storefront.firebase_read.fb.db')
+    def test_omet_les_produits_absents_ou_prives(self, mock_db):
+        missing = MagicMock()
+        missing.exists = False
+        private = MagicMock()
+        private.exists = True
+        private.id = 'p2'
+        private.to_dict.return_value = {'shopId': 's1', 'name': 'X', 'price': 1, 'isPublic': False}
+
+        def get_doc(pid):
+            m = MagicMock()
+            m.get.return_value = {'p1': missing, 'p2': private}[pid]
+            return m
+
+        mock_db.return_value.collection.return_value.document.side_effect = get_doc
+
+        result = get_public_products_by_ids('s1', ['p1', 'p2'])
+        self.assertEqual(result, {})
+
+    @patch('storefront.firebase_read.fb.db')
+    def test_omet_les_produits_d_une_autre_boutique(self, mock_db):
+        doc = MagicMock()
+        doc.exists = True
+        doc.id = 'p1'
+        doc.to_dict.return_value = {'shopId': 'autre-boutique', 'name': 'X', 'price': 1}
+        mock_db.return_value.collection.return_value.document.return_value.get.return_value = doc
+
+        result = get_public_products_by_ids('s1', ['p1'])
+        self.assertEqual(result, {})
+
+
+class GetShopOwnerUidTests(TestCase):
+    @patch('storefront.firebase_read.fb.db')
+    def test_renvoie_ownerId_du_document_boutique(self, mock_db):
+        doc = MagicMock()
+        doc.exists = True
+        doc.to_dict.return_value = {'ownerId': 'u1'}
+        mock_db.return_value.collection.return_value.document.return_value.get.return_value = doc
+
+        self.assertEqual(get_shop_owner_uid('s1'), 'u1')
+
+    @patch('storefront.firebase_read.fb.db')
+    def test_renvoie_none_si_boutique_absente(self, mock_db):
+        doc = MagicMock()
+        doc.exists = False
+        mock_db.return_value.collection.return_value.document.return_value.get.return_value = doc
+
+        self.assertIsNone(get_shop_owner_uid('s1'))

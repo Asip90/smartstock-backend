@@ -50,6 +50,7 @@ def _serialize_product(data: dict) -> dict:
         'images': images,
         'videoUrl': data.get('videoUrl'),
         'categoryId': data.get('categoryId'),
+        'stockQty': data.get('quantity') or 0,
         'inStock': (data.get('quantity') or 0) > 0,
         'createdAt': data.get('createdAt'),
     }
@@ -123,3 +124,33 @@ def list_categories(shop_id: str) -> list[dict]:
         {'id': d.id, 'name': d.to_dict().get('name', ''), 'iconName': d.to_dict().get('iconName')}
         for d in docs
     ]
+
+
+def get_public_products_by_ids(shop_id: str, product_ids: list[str]) -> dict[str, dict]:
+    """Relit les produits réels (prix, stock) pour une liste d'ids — utilisé
+    par le panier/checkout pour ne JAMAIS faire confiance aux valeurs
+    envoyées par le navigateur. Un id supprimé/privé/d'une autre boutique
+    est silencieusement omis (le checkout traite ça comme une ligne de
+    panier obsolète, cf. `storefront/orders.py`)."""
+    db = fb.db()
+    result: dict[str, dict] = {}
+    for product_id in product_ids:
+        doc = db.collection('produits').document(product_id).get()
+        if not doc.exists:
+            continue
+        data = doc.to_dict()
+        if data.get('shopId') != shop_id or not data.get('isPublic', True):
+            continue
+        result[product_id] = _serialize_product(data | {'id': doc.id})
+    return result
+
+
+def get_shop_owner_uid(shop_id: str) -> str | None:
+    """Lecture INTERNE (jamais exposée au sérialiseur public
+    `get_shop_by_slug`) : uid du propriétaire, utilisé uniquement pour
+    router la notification push d'une nouvelle commande."""
+    db = fb.db()
+    doc = db.collection('shops').document(shop_id).get()
+    if not doc.exists:
+        return None
+    return doc.to_dict().get('ownerId')
