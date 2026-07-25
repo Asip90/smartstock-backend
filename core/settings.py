@@ -110,6 +110,10 @@ REST_FRAMEWORK = {
 FEDAPAY_SECRET_KEY = os.environ.get('FEDAPAY_SECRET_KEY', '')
 FEDAPAY_ENV = os.environ.get('FEDAPAY_ENV', 'sandbox')
 FEDAPAY_WEBHOOK_SECRET = os.environ.get('FEDAPAY_WEBHOOK_SECRET', '')
+# Secret DÉDIÉ au webhook boutique en ligne (/api/webhook/fedapay/storefront)
+# — FedaPay génère un secret différent par endpoint, jamais le même que
+# FEDAPAY_WEBHOOK_SECRET (abonnement Pro).
+FEDAPAY_STOREFRONT_WEBHOOK_SECRET = os.environ.get('FEDAPAY_STOREFRONT_WEBHOOK_SECRET', '')
 FIREBASE_SERVICE_ACCOUNT_JSON = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON', '')
 
 # Tarifs Pro alignés sur la solution (app : subscription_page _monthlyFallback /

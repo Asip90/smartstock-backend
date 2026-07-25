@@ -6,6 +6,7 @@ depuis l'app via `StoreOrderService.confirmOrder` (Dart), cf. design Phase 3
 — pas de duplication de `SaleService` en Python."""
 import json
 
+from django.conf import settings
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -22,7 +23,9 @@ def webhook_view(request):
         return HttpResponseBadRequest('POST requis')
 
     signature = request.headers.get('X-FEDAPAY-SIGNATURE', '')
-    if not fedapay.verify_webhook_signature(request.body, signature):
+    if not fedapay.verify_webhook_signature(
+        request.body, signature, secret=settings.FEDAPAY_STOREFRONT_WEBHOOK_SECRET,
+    ):
         return JsonResponse({'error': 'signature_invalide'}, status=400)
 
     try:

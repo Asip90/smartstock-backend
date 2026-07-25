@@ -119,9 +119,15 @@ def create_payout(*, amount: int, firstname: str, lastname: str,
     }
 
 
-def verify_webhook_signature(payload: bytes, signature: str) -> bool:
-    """Vérifie la signature HMAC du webhook (header X-FEDAPAY-SIGNATURE)."""
-    secret = settings.FEDAPAY_WEBHOOK_SECRET
+def verify_webhook_signature(payload: bytes, signature: str, *, secret: str | None = None) -> bool:
+    """Vérifie la signature HMAC du webhook (header X-FEDAPAY-SIGNATURE).
+
+    Chaque endpoint webhook FedaPay a SON PROPRE secret (généré séparément
+    à la création de chaque webhook dans le dashboard) — jamais le même
+    entre l'abonnement Pro et la boutique en ligne. Repli sur
+    `FEDAPAY_WEBHOOK_SECRET` (abonnement) si `secret` n'est pas fourni,
+    pour ne pas casser l'appelant existant `billing/views.py::webhook`."""
+    secret = secret if secret is not None else settings.FEDAPAY_WEBHOOK_SECRET
     if not secret or not signature:
         return False
     computed = hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
